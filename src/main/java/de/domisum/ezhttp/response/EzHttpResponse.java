@@ -15,6 +15,7 @@ public class EzHttpResponse<T>
 	@Getter
 	private final int statusCode;
 	private final List<EzHttpHeader> headers;
+	@Getter
 	private final T body;
 
 

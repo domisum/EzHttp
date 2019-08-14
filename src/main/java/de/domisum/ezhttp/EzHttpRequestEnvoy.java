@@ -136,7 +136,7 @@ public class EzHttpRequestEnvoy<T>
 	{
 		AbstractURL url = request.getUrl();
 
-		switch(request.getMattpMethod())
+		switch(request.getMethod())
 		{
 			case GET:
 				return new HttpGet(url.toString());

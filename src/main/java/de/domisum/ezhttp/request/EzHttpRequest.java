@@ -17,9 +17,9 @@ public class EzHttpRequest
 {
 
 	@Getter
-	private final AbstractURL url;
+	private final MattpMethod method;
 	@Getter
-	private final MattpMethod mattpMethod;
+	private final AbstractURL url;
 
 	private final List<MattpHeader> headers = new ArrayList<>();
 
@@ -32,9 +32,19 @@ public class EzHttpRequest
 	@API
 	public static EzHttpRequest get(AbstractURL url)
 	{
-		return new EzHttpRequest(url, MattpMethod.GET);
+		return new EzHttpRequest(MattpMethod.GET, url);
 	}
 
+
+	// GETTERS
+	@API
+	public List<MattpHeader> getHeaders()
+	{
+		return Collections.unmodifiableList(headers);
+	}
+
+
+	// SETTERS
 	@API
 	public void addHeader(CharSequence key, CharSequence value)
 	{
@@ -45,14 +55,6 @@ public class EzHttpRequest
 	public void addHeader(MattpHeader header)
 	{
 		headers.add(header);
-	}
-
-
-	// GETTERS
-	@API
-	public List<MattpHeader> getHeaders()
-	{
-		return Collections.unmodifiableList(headers);
 	}
 
 }

@@ -51,7 +51,19 @@ public class EzHttpResponse<T>
 	}
 
 	@API
-	public T getSuccessBodyOrThrowExceptionWithHttpError() throws IOException
+	public T getSuccessBodyOrThrowHttpIoException(String wrappedMessage) throws IOException
+	{
+		try
+		{
+			return getSuccessBodyOrThrowHttpIoException();
+		}
+		catch(IOException e)
+		{
+			throw new IOException(wrappedMessage, e);
+		}
+	}
+
+	public T getSuccessBodyOrThrowHttpIoException() throws IOException
 	{
 		if(!isSuccess())
 			throw new IOException("HTTP code "+statusCode+" response:\n"+failureBody);

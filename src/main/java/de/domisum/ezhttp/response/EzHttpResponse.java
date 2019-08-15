@@ -3,12 +3,11 @@ package de.domisum.ezhttp.response;
 import de.domisum.ezhttp.EzHttpHeader;
 import de.domisum.lib.auxilium.util.java.annotations.API;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@RequiredArgsConstructor
 public class EzHttpResponse<T>
 {
 
@@ -16,7 +15,25 @@ public class EzHttpResponse<T>
 	private final int statusCode;
 	private final List<EzHttpHeader> headers;
 	@Getter
-	private final T body;
+	private final T successBody;
+	@Getter
+	private final String failureBody;
+
+
+	// INIT
+	public EzHttpResponse(int statusCode, List<EzHttpHeader> headers, T successBody, String failureBody)
+	{
+		this.statusCode = statusCode;
+		this.headers = new ArrayList<>(headers);
+		this.successBody = successBody;
+		this.failureBody = failureBody;
+
+		if((successBody == null) && (failureBody == null))
+			throw new IllegalArgumentException("successBody and failureBody can't both be null at the same time");
+
+		if((successBody != null) && (failureBody != null))
+			throw new IllegalArgumentException("successBody and failureBody can't both be set at the same time");
+	}
 
 
 	// GETTERS
@@ -24,6 +41,12 @@ public class EzHttpResponse<T>
 	public List<EzHttpHeader> getHeaders()
 	{
 		return Collections.unmodifiableList(headers);
+	}
+
+	@API
+	public boolean isSuccess()
+	{
+		return successBody != null;
 	}
 
 }

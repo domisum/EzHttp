@@ -8,14 +8,14 @@ import java.io.InputStream;
 
 @API
 @RequiredArgsConstructor
-public class EzHttpVoidBodyReader implements EzHttpResponseBodyReader<Void>
+public class EzHttpEmptyBodyReader implements EzHttpResponseBodyReader<String>
 {
 
 	// READ
 	@Override
-	public Void read(InputStream inputStream)
+	public String read(InputStream inputStream)
 	{
-		return null;
+		return "";
 	}
 
 }

@@ -6,6 +6,7 @@ import de.domisum.ezhttp.request.EzHttpRequest;
 import de.domisum.ezhttp.response.EzHttpIoResponse;
 import de.domisum.ezhttp.response.EzHttpResponse;
 import de.domisum.ezhttp.response.EzHttpResponseBodyReader;
+import de.domisum.ezhttp.response.bodyreaders.EzHttpStringBodyReader;
 import de.domisum.lib.auxilium.data.container.AbstractURL;
 import de.domisum.lib.auxilium.data.container.DurationDisplay;
 import de.domisum.lib.auxilium.mattp.MattpHeader;
@@ -47,9 +48,12 @@ import java.util.List;
 public class EzHttpRequestEnvoy<T>
 {
 
+	// CONSTANTS
+	private final EzHttpResponseBodyReader<String> failureResponseBodyReader = new EzHttpStringBodyReader();
+
 	// BASE SETTINGS
 	private final EzHttpRequest request;
-	private final EzHttpResponseBodyReader<T> responseBodyReader;
+	private final EzHttpResponseBodyReader<T> successResponseBodyReader;
 
 	// ADDTITIONAL SETTINGS
 	@Setter
@@ -109,6 +113,7 @@ public class EzHttpRequestEnvoy<T>
 	{
 		Builder requestConfigBuilder = RequestConfig.custom();
 
+		// TODO what exactly is this used for? it had some function, but I'm unsure what exactly it does
 		// noinspection deprecation
 		requestConfigBuilder.setCookieSpec(CookieSpecs.BROWSER_COMPATIBILITY);
 		requestConfigBuilder
@@ -176,10 +181,13 @@ public class EzHttpRequestEnvoy<T>
 	private EzHttpResponse<T> readResponse(HttpResponse response) throws IOException
 	{
 		int statusCode = response.getStatusLine().getStatusCode();
-		List<EzHttpHeader> headers = readResponseHeaders(response);
-		T responseBody = readResponseBody(response);
+		boolean successful = (statusCode/100) == 2;
 
-		return new EzHttpResponse<>(statusCode, headers, responseBody);
+		List<EzHttpHeader> headers = readResponseHeaders(response);
+		T successResponseBody = successful ? onSuccessReadResponseBody(response) : null;
+		String failureResponseBody = successful ? null : onFailureReadResponseBody(response);
+
+		return new EzHttpResponse<>(statusCode, headers, successResponseBody, failureResponseBody);
 	}
 
 	private List<EzHttpHeader> readResponseHeaders(HttpResponse response)
@@ -192,11 +200,19 @@ public class EzHttpRequestEnvoy<T>
 		return headers;
 	}
 
-	private T readResponseBody(HttpResponse response) throws IOException
+	private T onSuccessReadResponseBody(HttpResponse response) throws IOException
 	{
 		try(InputStream responseBodyStream = response.getEntity().getContent())
 		{
-			return responseBodyReader.read(responseBodyStream);
+			return successResponseBodyReader.read(responseBodyStream);
+		}
+	}
+
+	private String onFailureReadResponseBody(HttpResponse response) throws IOException
+	{
+		try(InputStream responseBodyStream = response.getEntity().getContent())
+		{
+			return failureResponseBodyReader.read(responseBodyStream);
 		}
 	}
 

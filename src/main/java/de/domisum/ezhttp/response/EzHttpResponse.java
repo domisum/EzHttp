@@ -4,6 +4,7 @@ import de.domisum.ezhttp.EzHttpHeader;
 import de.domisum.lib.auxilium.util.java.annotations.API;
 import lombok.Getter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,6 +48,15 @@ public class EzHttpResponse<T>
 	public boolean isSuccess()
 	{
 		return successBody != null;
+	}
+
+	@API
+	public T getSuccessBodyOrThrowExceptionWithHttpError() throws IOException
+	{
+		if(!isSuccess())
+			throw new IOException("HTTP code "+statusCode+" response:\n"+failureBody);
+
+		return successBody;
 	}
 
 }

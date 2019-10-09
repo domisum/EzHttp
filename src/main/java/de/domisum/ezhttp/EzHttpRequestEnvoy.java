@@ -9,7 +9,6 @@ import de.domisum.ezhttp.response.EzHttpResponseBodyReader;
 import de.domisum.ezhttp.response.bodyreaders.EzHttpStringBodyReader;
 import de.domisum.lib.auxilium.data.container.AbstractURL;
 import de.domisum.lib.auxilium.data.container.DurationDisplay;
-import de.domisum.lib.auxilium.mattp.MattpHeader;
 import de.domisum.lib.auxilium.util.java.annotations.API;
 import de.domisum.lib.auxilium.util.java.exceptions.ShouldNeverHappenError;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,6 @@ import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -153,8 +151,6 @@ public class EzHttpRequestEnvoy<T>
 				return new HttpPut(url.toString());
 			case DELETE:
 				return new HttpDelete(url.toString());
-			case TRACE:
-				return new HttpTrace(url.toString());
 			case OPTIONS:
 				return new HttpOptions(url.toString());
 			case PATCH:
@@ -166,7 +162,7 @@ public class EzHttpRequestEnvoy<T>
 
 	private void addHeadersToRequest(HttpMessage apacheRequest)
 	{
-		for(MattpHeader header : request.getHeaders())
+		for(EzHttpHeader header : request.getHeaders())
 			apacheRequest.addHeader(header.getKey(), header.getValue());
 	}
 

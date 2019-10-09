@@ -1,8 +1,7 @@
 package de.domisum.ezhttp.request;
 
+import de.domisum.ezhttp.EzHttpHeader;
 import de.domisum.lib.auxilium.data.container.AbstractURL;
-import de.domisum.lib.auxilium.mattp.MattpHeader;
-import de.domisum.lib.auxilium.mattp.request.MattpMethod;
 import de.domisum.lib.auxilium.util.java.annotations.API;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +16,11 @@ public class EzHttpRequest
 {
 
 	@Getter
-	private final MattpMethod method;
+	private final EzHttpRequestMethod method;
 	@Getter
 	private final AbstractURL url;
 
-	private final List<MattpHeader> headers = new ArrayList<>();
+	private final List<EzHttpHeader> headers = new ArrayList<>();
 
 	@Getter
 	@Setter
@@ -32,13 +31,13 @@ public class EzHttpRequest
 	@API
 	public static EzHttpRequest get(AbstractURL url)
 	{
-		return new EzHttpRequest(MattpMethod.GET, url);
+		return new EzHttpRequest(EzHttpRequestMethod.GET, url);
 	}
 
 
 	// GETTERS
 	@API
-	public List<MattpHeader> getHeaders()
+	public List<EzHttpHeader> getHeaders()
 	{
 		return Collections.unmodifiableList(headers);
 	}
@@ -48,11 +47,11 @@ public class EzHttpRequest
 	@API
 	public void addHeader(CharSequence key, CharSequence value)
 	{
-		addHeader(new MattpHeader(key, value));
+		addHeader(new EzHttpHeader(key, value));
 	}
 
 	@API
-	public void addHeader(MattpHeader header)
+	public void addHeader(EzHttpHeader header)
 	{
 		headers.add(header);
 	}

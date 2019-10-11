@@ -63,6 +63,7 @@ public class EzHttpResponse<T>
 		}
 	}
 
+	@API
 	public T getSuccessBodyOrThrowHttpIoException() throws IOException
 	{
 		if(!isSuccess())

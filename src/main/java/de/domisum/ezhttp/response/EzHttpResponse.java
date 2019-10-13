@@ -50,6 +50,14 @@ public class EzHttpResponse<T>
 		return successBody != null;
 	}
 
+
+	@API
+	public T getSuccessBodyOrThrowHttpIoException() throws IOException
+	{
+		ifFailedThrowHttpIoException();
+		return successBody;
+	}
+
 	@API
 	public T getSuccessBodyOrThrowHttpIoException(String wrappedMessage) throws IOException
 	{
@@ -63,13 +71,27 @@ public class EzHttpResponse<T>
 		}
 	}
 
-	@API
-	public T getSuccessBodyOrThrowHttpIoException() throws IOException
-	{
-		if(!isSuccess())
-			throw new IOException("HTTP code "+statusCode+" response:\n"+failureBody);
 
-		return successBody;
+	@API
+	public void ifFailedThrowHttpIoException() throws IOException
+	{
+		if(isSuccess())
+			return;
+
+		throw new IOException("HTTP code "+statusCode+" response:\n"+failureBody);
+	}
+
+	@API
+	public void ifFailedThrowHttpIoException(String wrappedMessage) throws IOException
+	{
+		try
+		{
+			ifFailedThrowHttpIoException();
+		}
+		catch(IOException e)
+		{
+			throw new IOException(wrappedMessage, e);
+		}
 	}
 
 }

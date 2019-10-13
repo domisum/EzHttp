@@ -29,9 +29,6 @@ public class EzHttpResponse<T>
 		this.successBody = successBody;
 		this.failureBody = failureBody;
 
-		if((successBody == null) && (failureBody == null))
-			throw new IllegalArgumentException("successBody and failureBody can't both be null at the same time");
-
 		if((successBody != null) && (failureBody != null))
 			throw new IllegalArgumentException("successBody and failureBody can't both be set at the same time");
 	}
@@ -47,7 +44,7 @@ public class EzHttpResponse<T>
 	@API
 	public boolean isSuccess()
 	{
-		return successBody != null;
+		return failureBody == null;
 	}
 
 
@@ -78,7 +75,7 @@ public class EzHttpResponse<T>
 		if(isSuccess())
 			return;
 
-		throw new IOException("HTTP code "+statusCode+" response:\n"+failureBody);
+		throw new IOException("response HTTP "+statusCode+", body:\n"+failureBody);
 	}
 
 	@API

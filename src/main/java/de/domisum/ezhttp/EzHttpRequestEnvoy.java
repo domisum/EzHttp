@@ -177,7 +177,8 @@ public class EzHttpRequestEnvoy<T>
 	private EzHttpResponse<T> readResponse(HttpResponse response) throws IOException
 	{
 		int statusCode = response.getStatusLine().getStatusCode();
-		boolean successful = (statusCode/100) == 2;
+		int statusCodeFirstDigit = statusCode/100;
+		boolean successful = (statusCodeFirstDigit == 2) || (statusCodeFirstDigit == 3);
 
 		List<EzHttpHeader> headers = readResponseHeaders(response);
 		T successResponseBody = successful ? onSuccessReadResponseBody(response) : null;

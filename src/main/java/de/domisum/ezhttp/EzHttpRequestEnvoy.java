@@ -8,7 +8,7 @@ import de.domisum.ezhttp.response.EzHttpResponse;
 import de.domisum.ezhttp.response.EzHttpResponseBodyReader;
 import de.domisum.ezhttp.response.bodyreaders.EzHttpStringBodyReader;
 import de.domisum.lib.auxilium.data.container.AbstractURL;
-import de.domisum.lib.auxilium.data.container.DurationDisplay;
+import de.domisum.lib.auxilium.display.DurationDisplay;
 import de.domisum.lib.auxilium.util.java.annotations.API;
 import de.domisum.lib.auxilium.util.java.exceptions.ShouldNeverHappenError;
 import lombok.RequiredArgsConstructor;

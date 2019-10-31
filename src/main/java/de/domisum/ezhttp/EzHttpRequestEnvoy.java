@@ -75,22 +75,15 @@ public class EzHttpRequestEnvoy<T>
 				CloseableHttpResponse response = httpClient.execute(apacheRequest))
 		{
 			if(requestTimeouter.didTimeOutAndEnd())
-				throw getTimeoutException(requestTimeouter);
+				throw new IoTimeoutException(requestTimeouter.getTimeout());
 
 			EzHttpResponse<T> ezHttpResponse = readResponse(response);
 			return new EzHttpIoResponse<>(ezHttpResponse, null);
 		}
 		catch(IOException e)
 		{
-			IOException ioException = requestTimeouter.didTimeOutAndEnd() ? getTimeoutException(requestTimeouter) : e;
-			return new EzHttpIoResponse<T>(null, ioException);
+			return new EzHttpIoResponse<T>(null, e);
 		}
-	}
-
-	private IOException getTimeoutException(EzHttpRequestTimeouter requestTimeouter)
-	{
-		String timeoutAsString = DurationDisplay.display(requestTimeouter.getTimeout());
-		return new IOException("request aborted due to timeout after "+timeoutAsString);
 	}
 
 
@@ -211,6 +204,19 @@ public class EzHttpRequestEnvoy<T>
 		{
 			return failureResponseBodyReader.read(responseBodyStream);
 		}
+	}
+
+
+	// TIMEOUT
+	private static class IoTimeoutException extends IOException
+	{
+
+		// INIT
+		public IoTimeoutException(Duration timeout)
+		{
+			super("Request aborted after timeout of "+DurationDisplay.display(timeout));
+		}
+
 	}
 
 }

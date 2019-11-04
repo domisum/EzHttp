@@ -83,7 +83,7 @@ public class EzHttpRequestEnvoy<T>
 			if(timeout.didTimeout())
 				exception = new IoTimeoutException(timeout.getDuration());
 
-			return new EzHttpIoResponse<T>(null, exception);
+			return new EzHttpIoResponse<>(null, exception);
 		}
 	}
 

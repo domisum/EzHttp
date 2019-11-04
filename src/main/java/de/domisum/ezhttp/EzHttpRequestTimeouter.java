@@ -1,62 +1,109 @@
 package de.domisum.ezhttp;
 
+import de.domisum.lib.auxilium.util.java.ThreadUtil;
+import de.domisum.lib.auxilium.util.time.DurationUtil;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import java.time.Duration;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.time.Instant;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-@RequiredArgsConstructor
-public class EzHttpRequestTimeouter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class EzHttpRequestTimeouter
 {
 
-	// INPUT
-	private final HttpUriRequest request;
-	@Getter
-	private final Duration timeout;
-
 	// STATUS
-	private final Timer timer = new Timer(true);
-	private boolean ended = false;
-	private final Object lock = new Object();
+	private static final Set<RequestTimeoutTask> timeouts = ConcurrentHashMap.newKeySet();
+	private static Thread timeoutThread = null;
 
 
-	// PROCESS
-	public void start()
+	// TIMEOUT
+	public static synchronized RequestTimeoutTask scheduleTimeout(HttpUriRequest reuqest, Duration timeoutDuration)
 	{
-		TimerTask abortTask = new TimerTask()
-		{
-			@Override
-			public void run()
-			{
-				synchronized(lock)
-				{
-					if(ended)
-						return;
+		RequestTimeoutTask requestTimeoutTask = new RequestTimeoutTask(reuqest, timeoutDuration);
+		timeouts.add(requestTimeoutTask);
 
-					ended = true;
-					request.abort();
-				}
-			}
-		};
+		if(timeoutThread == null)
+			timeoutThread = ThreadUtil.createAndStartDaemonThread(EzHttpRequestTimeouter::timeoutThreadRun,
+					"ezHttpRequestTimeouter"
+			);
 
-		timer.schedule(abortTask, timeout.toMillis());
+		return requestTimeoutTask;
 	}
 
-	public boolean didTimeOutAndEnd()
+	private static void timeoutThreadRun()
 	{
-		synchronized(lock)
+		while(!Thread.currentThread().isInterrupted())
 		{
-			if(ended)
-				return true;
-
-			ended = true;
-			timer.cancel();
-
-			return false;
+			timeoutThreadTick();
+			ThreadUtil.sleep(Duration.ofMillis(100));
 		}
+	}
+
+	private static void timeoutThreadTick()
+	{
+		for(RequestTimeoutTask timeout : timeouts)
+			timeout.tick();
+
+		timeouts.removeIf(t->t.getStatus() != RequestTimeoutStatus.ACTIVE);
+	}
+
+
+	@RequiredArgsConstructor
+	public static class RequestTimeoutTask
+	{
+
+		// REFERENCES
+		private final HttpUriRequest request;
+		@Getter
+		private final Duration duration;
+		private final Instant start = Instant.now();
+
+		// STATUS
+		@Getter
+		private RequestTimeoutStatus status = RequestTimeoutStatus.ACTIVE;
+
+
+		// TIMEOUT
+		public synchronized boolean didTimeout()
+		{
+			return status == RequestTimeoutStatus.TIMED_OUT;
+		}
+
+		public synchronized void cancel()
+		{
+			if(status != RequestTimeoutStatus.ACTIVE)
+				return;
+
+			status = RequestTimeoutStatus.CANCELLED;
+		}
+
+		private synchronized void tick()
+		{
+			if(status != RequestTimeoutStatus.ACTIVE)
+				return;
+
+			if(DurationUtil.isOlderThan(start, duration))
+			{
+				request.abort();
+				status = RequestTimeoutStatus.TIMED_OUT;
+			}
+		}
+
+	}
+
+	private enum RequestTimeoutStatus
+	{
+
+		ACTIVE,
+		TIMED_OUT,
+		CANCELLED
+
 	}
 
 }

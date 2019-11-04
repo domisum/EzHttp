@@ -1,5 +1,6 @@
 package de.domisum.ezhttp;
 
+import de.domisum.ezhttp.EzHttpRequestTimeouter.RequestTimeoutTask;
 import de.domisum.ezhttp.auth.EzHttpAuthProvider;
 import de.domisum.ezhttp.auth.providers.EzHttpNoAuthProvider;
 import de.domisum.ezhttp.request.EzHttpRequest;
@@ -68,21 +69,21 @@ public class EzHttpRequestEnvoy<T>
 	{
 		HttpUriRequest apacheRequest = buildApacheRequest();
 
-		EzHttpRequestTimeouter requestTimeouter = new EzHttpRequestTimeouter(apacheRequest, timeout);
-		requestTimeouter.start();
-
+		RequestTimeoutTask timeout = EzHttpRequestTimeouter.scheduleTimeout(apacheRequest, this.timeout);
 		try(CloseableHttpClient httpClient = buildHttpClient();
 				CloseableHttpResponse response = httpClient.execute(apacheRequest))
 		{
-			if(requestTimeouter.didTimeOutAndEnd())
-				throw new IoTimeoutException(requestTimeouter.getTimeout());
-
 			EzHttpResponse<T> ezHttpResponse = readResponse(response);
+			timeout.cancel();
 			return new EzHttpIoResponse<>(ezHttpResponse, null);
 		}
 		catch(IOException e)
 		{
-			return new EzHttpIoResponse<T>(null, e);
+			IOException exception = e;
+			if(timeout.didTimeout())
+				exception = new IoTimeoutException(timeout.getDuration());
+
+			return new EzHttpIoResponse<T>(null, exception);
 		}
 	}
 

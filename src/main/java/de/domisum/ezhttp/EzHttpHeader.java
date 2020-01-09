@@ -6,8 +6,10 @@ import org.apache.commons.lang3.Validate;
 public class EzHttpHeader
 {
 
-	@Getter private final String key;
-	@Getter private final String value;
+	@Getter
+	private final String key;
+	@Getter
+	private final String value;
 
 
 	// INIT
@@ -38,7 +40,8 @@ public class EzHttpHeader
 
 
 	// OBJECT
-	@Override public String toString()
+	@Override
+	public String toString()
 	{
 		return key+": "+value;
 	}

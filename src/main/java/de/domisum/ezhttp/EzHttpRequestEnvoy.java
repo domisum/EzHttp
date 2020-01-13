@@ -101,12 +101,12 @@ public class EzHttpRequestEnvoy<T>
 		return clientBuilder.build();
 	}
 
+	@SuppressWarnings("deprecation")
 	private Builder buildRequestConfig()
 	{
 		Builder requestConfigBuilder = RequestConfig.custom();
 
 		// TODO what exactly is this used for? it had some function, but I'm unsure what exactly it does
-		// noinspection deprecation
 		requestConfigBuilder.setCookieSpec(CookieSpecs.BROWSER_COMPATIBILITY);
 		requestConfigBuilder
 				.setSocketTimeout((int) timeout.toMillis())

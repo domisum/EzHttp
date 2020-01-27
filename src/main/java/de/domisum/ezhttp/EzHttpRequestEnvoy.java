@@ -293,18 +293,18 @@ public class EzHttpRequestEnvoy<T>
 		}
 
 		@Override
-		public synchronized int available()
+		public synchronized int available() throws IOException
 		{
 			if(start == null)
 				start = Instant.now();
 
 			long available = getTotalBytesAvailable()-bytesRead;
+			int backingAvailable = backingStream.available();
+			if(backingAvailable < available)
+				available = backingAvailable;
 
 			if(available < 0)
 				return 0;
-
-			if(available > Integer.MAX_VALUE)
-				return Integer.MAX_VALUE;
 
 			return (int) available;
 		}

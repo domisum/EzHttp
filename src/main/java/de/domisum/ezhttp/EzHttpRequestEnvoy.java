@@ -256,7 +256,6 @@ public class EzHttpRequestEnvoy<T>
 
 
 	// THROTTLING
-	// TODO improve to discard backlogged available bytes
 	@RequiredArgsConstructor
 	private static class ThrottlingInputStream extends InputStream
 	{
@@ -266,11 +265,11 @@ public class EzHttpRequestEnvoy<T>
 
 		// STATUS
 		private Instant start;
-		private long bytesRead = 0;
+		private long bytesUsed = 0;
 
 
 		// THROTTLING
-		private long getTotalBytesAvailable()
+		private long getBytesUseLimit()
 		{
 			Duration age = DurationUtil.toNow(start);
 			final int secondsPerMinute = 60;
@@ -288,7 +287,7 @@ public class EzHttpRequestEnvoy<T>
 			while(available() <= 0)
 				ThreadUtil.sleep(10);
 
-			bytesRead++;
+			bytesUsed++;
 			return backingStream.read();
 		}
 
@@ -298,13 +297,19 @@ public class EzHttpRequestEnvoy<T>
 			if(start == null)
 				start = Instant.now();
 
-			long available = getTotalBytesAvailable()-bytesRead;
-			int backingAvailable = backingStream.available();
-			if(backingAvailable < available)
-				available = backingAvailable;
+			long available = getBytesUseLimit()-bytesUsed;
+			if(available > (3*bytesPerSecond)) // if backlogged reduce available bytes
+			{
+				bytesUsed += bytesPerSecond;
+				available -= bytesPerSecond;
+			}
 
 			if(available < 0)
 				return 0;
+
+			int backingAvailable = backingStream.available();
+			if(backingAvailable < available)
+				available = backingAvailable;
 
 			return (int) available;
 		}

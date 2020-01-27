@@ -10,10 +10,13 @@ import de.domisum.ezhttp.response.EzHttpResponseBodyReader;
 import de.domisum.ezhttp.response.bodyreaders.EzHttpStringBodyReader;
 import de.domisum.lib.auxilium.data.container.AbstractURL;
 import de.domisum.lib.auxilium.display.DurationDisplay;
+import de.domisum.lib.auxilium.util.java.ThreadUtil;
 import de.domisum.lib.auxilium.util.java.annotations.API;
 import de.domisum.lib.auxilium.util.java.exceptions.ShouldNeverHappenError;
+import de.domisum.lib.auxilium.util.time.DurationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.Validate;
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpMessage;
@@ -36,9 +39,11 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +66,26 @@ public class EzHttpRequestEnvoy<T>
 	private EzHttpAuthProvider authProvider = new EzHttpNoAuthProvider();
 	@Setter
 	private boolean followRedirects = true;
+
+	private Double uploadSpeedCapMibitPerSecond = null;
+
+
+	// SETTERS
+	@API
+	public void setUploadSpeedCapMibitPerSecond(@Nullable Integer uploadSpeedCap)
+	{
+		Double uploadSpeedCapDouble = (uploadSpeedCap == null) ? null : uploadSpeedCap.doubleValue();
+		setUploadSpeedCapMibitPerSecond(uploadSpeedCapDouble);
+	}
+
+	@API
+	public void setUploadSpeedCapMibitPerSecond(@Nullable Double uploadSpeedCap)
+	{
+		if(uploadSpeedCap != null)
+			Validate.isTrue(uploadSpeedCap > 0, "upload speed cap has to be greater than zero, was "+uploadSpeedCap);
+
+		uploadSpeedCapMibitPerSecond = uploadSpeedCap;
+	}
 
 
 	// SEND
@@ -163,7 +188,16 @@ public class EzHttpRequestEnvoy<T>
 	private void addBodyToRequest(HttpMessage apacheRequest)
 	{
 		apacheRequest.addHeader("Content-Type", request.getBody().getContentType());
-		((HttpEntityEnclosingRequest) apacheRequest).setEntity(new InputStreamEntity(request.getBody().getAsInputStream()));
+
+		var bodyInputStream = request.getBody().getAsInputStream();
+		if(uploadSpeedCapMibitPerSecond != null)
+		{
+			final double kibi = 1024d;
+			double mibitToByteFactor = (kibi*kibi)/8;
+			long bytesPerSecond = (long) Math.ceil(uploadSpeedCapMibitPerSecond*mibitToByteFactor);
+			bodyInputStream = new ThrottlingInputStream(bodyInputStream, bytesPerSecond);
+		}
+		((HttpEntityEnclosingRequest) apacheRequest).setEntity(new InputStreamEntity(bodyInputStream));
 	}
 
 
@@ -216,6 +250,69 @@ public class EzHttpRequestEnvoy<T>
 		public IoTimeoutException(Duration timeout)
 		{
 			super("Request aborted after timeout of "+DurationDisplay.display(timeout));
+		}
+
+	}
+
+
+	// THROTTLING
+	// TODO improve to discard backlogged available bytes
+	@RequiredArgsConstructor
+	private static class ThrottlingInputStream extends InputStream
+	{
+
+		private final InputStream backingStream;
+		private final long bytesPerSecond;
+
+		// STATUS
+		private Instant start;
+		private long bytesRead = 0;
+
+
+		// THROTTLING
+		private long getTotalBytesAvailable()
+		{
+			Duration age = DurationUtil.toNow(start);
+			final int secondsPerMinute = 60;
+			double secondsSinceStart = DurationUtil.getMinutesDecimal(age)*secondsPerMinute;
+
+			long totalBytesAvailable = Math.round(bytesPerSecond*secondsSinceStart);
+			return totalBytesAvailable;
+		}
+
+
+		// INPUT STREAM
+		@Override
+		public int read() throws IOException
+		{
+			while(available() <= 0)
+				ThreadUtil.sleep(10);
+
+			bytesRead++;
+			return backingStream.read();
+		}
+
+		@Override
+		public synchronized int available()
+		{
+			if(start == null)
+				start = Instant.now();
+
+			long available = getTotalBytesAvailable()-bytesRead;
+
+			if(available < 0)
+				return 0;
+
+			if(available > Integer.MAX_VALUE)
+				return Integer.MAX_VALUE;
+
+			return (int) available;
+		}
+
+		@Override
+		public void close() throws IOException
+		{
+			backingStream.close();
 		}
 
 	}

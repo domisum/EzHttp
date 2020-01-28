@@ -284,34 +284,45 @@ public class EzHttpRequestEnvoy<T>
 		@Override
 		public int read() throws IOException
 		{
-			while(available() <= 0)
+			var read = backingStream.read();
+			if(read == -1)
+				return -1;
+
+			while(bytesUsable() <= 0)
 				ThreadUtil.sleep(10);
 
 			bytesUsed++;
-			return backingStream.read();
+			return read;
 		}
 
 		@Override
 		public synchronized int available() throws IOException
 		{
-			if(start == null)
-				start = Instant.now();
-
-			long available = getBytesUseLimit()-bytesUsed;
-			if(available > (3*bytesPerSecond)) // if backlogged reduce available bytes
-			{
-				bytesUsed += bytesPerSecond;
-				available -= bytesPerSecond;
-			}
-
-			if(available < 0)
-				return 0;
+			long available = bytesUsable();
 
 			int backingAvailable = backingStream.available();
 			if(backingAvailable < available)
 				available = backingAvailable;
 
 			return (int) available;
+		}
+
+		private int bytesUsable()
+		{
+			if(start == null)
+				start = Instant.now();
+
+			long usable = getBytesUseLimit()-bytesUsed;
+			if(usable > (3*bytesPerSecond)) // prevent accumulation of usable bytes by backlog
+			{
+				bytesUsed += bytesPerSecond;
+				usable -= bytesPerSecond;
+			}
+
+			if(usable < 0)
+				usable = 0;
+
+			return (int) usable;
 		}
 
 		@Override

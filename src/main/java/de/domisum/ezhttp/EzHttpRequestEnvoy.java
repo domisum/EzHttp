@@ -247,7 +247,7 @@ public class EzHttpRequestEnvoy<T>
 
 
 	// ABORTION
-	private static class IoTimeoutException extends IOException
+	public static class IoTimeoutException extends IOException
 	{
 
 		// INIT
@@ -258,7 +258,7 @@ public class EzHttpRequestEnvoy<T>
 
 	}
 
-	private static class IoInterruptedException extends IOException
+	public static class IoInterruptedException extends IOException
 	{
 
 		// INIT

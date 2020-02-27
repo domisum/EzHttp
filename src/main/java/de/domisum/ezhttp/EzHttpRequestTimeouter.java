@@ -23,9 +23,11 @@ public final class EzHttpRequestTimeouter
 
 
 	// TIMEOUT
-	public static synchronized RequestTimeoutTask scheduleTimeout(HttpUriRequest reuqest, Duration timeoutDuration)
+	static synchronized RequestTimeoutTask scheduleTimeout(
+			HttpUriRequest request, Duration timeoutDuration, boolean cancelOnInterrupt)
 	{
-		RequestTimeoutTask requestTimeoutTask = new RequestTimeoutTask(reuqest, timeoutDuration);
+		var threadToWatchForInterrupt = cancelOnInterrupt ? Thread.currentThread() : null;
+		RequestTimeoutTask requestTimeoutTask = new RequestTimeoutTask(request, threadToWatchForInterrupt, timeoutDuration);
 		timeouts.add(requestTimeoutTask);
 
 		if(timeoutThread == null)
@@ -55,11 +57,11 @@ public final class EzHttpRequestTimeouter
 
 
 	@RequiredArgsConstructor
-	public static class RequestTimeoutTask
+	static class RequestTimeoutTask
 	{
 
-		// REFERENCES
 		private final HttpUriRequest request;
+		private final Thread threadToWatchForInterrupt;
 		@Getter
 		private final Duration duration;
 		private final Instant start = Instant.now();
@@ -75,6 +77,11 @@ public final class EzHttpRequestTimeouter
 			return status == RequestTimeoutStatus.TIMED_OUT;
 		}
 
+		public synchronized boolean wasRequestThreadInterrupted()
+		{
+			return status == RequestTimeoutStatus.REQUEST_THREAD_INTERRUPTED;
+		}
+
 		public synchronized void cancel()
 		{
 			if(status != RequestTimeoutStatus.ACTIVE)
@@ -87,6 +94,13 @@ public final class EzHttpRequestTimeouter
 		{
 			if(status != RequestTimeoutStatus.ACTIVE)
 				return;
+
+			if((threadToWatchForInterrupt != null) && threadToWatchForInterrupt.isInterrupted())
+			{
+				request.abort();
+				status = RequestTimeoutStatus.REQUEST_THREAD_INTERRUPTED;
+				return;
+			}
 
 			if(DurationUtil.isOlderThan(start, duration))
 			{
@@ -102,6 +116,7 @@ public final class EzHttpRequestTimeouter
 
 		ACTIVE,
 		TIMED_OUT,
+		REQUEST_THREAD_INTERRUPTED,
 		CANCELLED
 
 	}

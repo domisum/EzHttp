@@ -61,6 +61,8 @@ public class EzHttpRequestEnvoy<T>
 
 	// ADDTITIONAL SETTINGS
 	@Setter
+	private boolean cancelOnInterrupt = true;
+	@Setter
 	private Duration timeout = Duration.ofMinutes(1);
 	@Setter
 	private EzHttpAuthProvider authProvider = new EzHttpNoAuthProvider();
@@ -94,19 +96,21 @@ public class EzHttpRequestEnvoy<T>
 	{
 		HttpUriRequest apacheRequest = buildApacheRequest();
 
-		RequestTimeoutTask timeout = EzHttpRequestTimeouter.scheduleTimeout(apacheRequest, this.timeout);
+		RequestTimeoutTask timeoutTask = EzHttpRequestTimeouter.scheduleTimeout(apacheRequest, this.timeout, cancelOnInterrupt);
 		try(CloseableHttpClient httpClient = buildHttpClient();
 				CloseableHttpResponse response = httpClient.execute(apacheRequest))
 		{
 			EzHttpResponse<T> ezHttpResponse = readResponse(response);
-			timeout.cancel();
+			timeoutTask.cancel();
 			return new EzHttpIoResponse<>(ezHttpResponse, null);
 		}
 		catch(IOException e)
 		{
 			IOException exception = e;
-			if(timeout.didTimeout())
-				exception = new IoTimeoutException(timeout.getDuration());
+			if(timeoutTask.wasRequestThreadInterrupted())
+				exception = new IoInterruptedException();
+			else if(timeoutTask.didTimeout())
+				exception = new IoTimeoutException(timeoutTask.getDuration());
 
 			return new EzHttpIoResponse<>(null, exception);
 		}
@@ -242,7 +246,7 @@ public class EzHttpRequestEnvoy<T>
 	}
 
 
-	// TIMEOUT
+	// ABORTION
 	private static class IoTimeoutException extends IOException
 	{
 
@@ -250,6 +254,17 @@ public class EzHttpRequestEnvoy<T>
 		public IoTimeoutException(Duration timeout)
 		{
 			super("Request aborted after timeout of "+DurationDisplay.display(timeout));
+		}
+
+	}
+
+	private static class IoInterruptedException extends IOException
+	{
+
+		// INIT
+		public IoInterruptedException()
+		{
+			super("Request aborted due to thread interrupt");
 		}
 
 	}

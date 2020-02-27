@@ -96,7 +96,7 @@ public class EzHttpRequestEnvoy<T>
 	{
 		HttpUriRequest apacheRequest = buildApacheRequest();
 
-		RequestTimeoutTask timeoutTask = EzHttpRequestTimeouter.scheduleTimeout(apacheRequest, this.timeout, cancelOnInterrupt);
+		RequestTimeoutTask timeoutTask = EzHttpRequestTimeouter.scheduleTimeout(apacheRequest, timeout, cancelOnInterrupt);
 		try(CloseableHttpClient httpClient = buildHttpClient();
 				CloseableHttpResponse response = httpClient.execute(apacheRequest))
 		{

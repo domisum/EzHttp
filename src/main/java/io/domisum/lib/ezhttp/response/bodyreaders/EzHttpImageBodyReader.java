@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp.response.bodyreaders;
 
-import io.domisum.lib.ezhttp.response.EzHttpResponseBodyReader;
 import io.domisum.lib.auxiliumlib.annotations.API;
+import io.domisum.lib.ezhttp.response.EzHttpResponseBodyReader;
 import lombok.RequiredArgsConstructor;
 
 import javax.imageio.ImageIO;
@@ -11,14 +11,16 @@ import java.io.InputStream;
 
 @API
 @RequiredArgsConstructor
-public class EzHttpImageBodyReader implements EzHttpResponseBodyReader<BufferedImage>
+public class EzHttpImageBodyReader
+		implements EzHttpResponseBodyReader<BufferedImage>
 {
-
+	
 	// READ
 	@Override
-	public BufferedImage read(InputStream inputStream) throws IOException
+	public BufferedImage read(InputStream inputStream)
+			throws IOException
 	{
 		return ImageIO.read(inputStream);
 	}
-
+	
 }

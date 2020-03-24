@@ -6,13 +6,13 @@ import lombok.Getter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
+@API
 public class EzHttpResponse<T>
 {
-
+	
 	@Getter
 	private final int statusCode;
 	private final List<EzHttpHeader> headers;
@@ -20,8 +20,8 @@ public class EzHttpResponse<T>
 	private final T successBody;
 	@Getter
 	private final String failureBody;
-
-
+	
+	
 	// INIT
 	public EzHttpResponse(int statusCode, List<EzHttpHeader> headers, T successBody, String failureBody)
 	{
@@ -29,35 +29,37 @@ public class EzHttpResponse<T>
 		this.headers = new ArrayList<>(headers);
 		this.successBody = successBody;
 		this.failureBody = failureBody;
-
+		
 		if((successBody != null) && (failureBody != null))
 			throw new IllegalArgumentException("successBody and failureBody can't both be set at the same time");
 	}
-
-
+	
+	
 	// GETTERS
 	@API
 	public List<EzHttpHeader> getHeaders()
 	{
-		return Collections.unmodifiableList(headers);
+		return new ArrayList<>(headers);
 	}
-
+	
 	@API
 	public boolean isSuccess()
 	{
 		return failureBody == null;
 	}
-
-
+	
+	
 	@API
-	public T getSuccessBodyOrThrowHttpIoException() throws IOException
+	public T getSuccessBodyOrThrowHttpIoException()
+			throws IOException
 	{
 		ifFailedThrowHttpIoException();
 		return successBody;
 	}
-
+	
 	@API
-	public T getSuccessBodyOrThrowHttpIoException(Function<IOException, IOException> wrapper) throws IOException
+	public T getSuccessBodyOrThrowHttpIoException(Function<IOException,IOException> wrapper)
+			throws IOException
 	{
 		try
 		{
@@ -68,25 +70,27 @@ public class EzHttpResponse<T>
 			throw wrapper.apply(e);
 		}
 	}
-
+	
 	@API
-	public T getSuccessBodyOrThrowHttpIoException(String wrappedMessage) throws IOException
+	public T getSuccessBodyOrThrowHttpIoException(String wrappedMessage)
+			throws IOException
 	{
 		return getSuccessBodyOrThrowHttpIoException(e->new IOException(wrappedMessage, e));
 	}
-
-
+	
+	
 	@API
-	public void ifFailedThrowHttpIoException() throws IOException
+	public void ifFailedThrowHttpIoException()
+			throws IOException
 	{
 		if(isSuccess())
 			return;
-
 		throw new IOException("response HTTP "+statusCode+", body:\n"+failureBody);
 	}
-
+	
 	@API
-	public void ifFailedThrowHttpIoException(String wrappedMessage) throws IOException
+	public void ifFailedThrowHttpIoException(String wrappedMessage)
+			throws IOException
 	{
 		try
 		{
@@ -97,5 +101,5 @@ public class EzHttpResponse<T>
 			throw new IOException(wrappedMessage, e);
 		}
 	}
-
+	
 }

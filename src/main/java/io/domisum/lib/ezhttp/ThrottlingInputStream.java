@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp;
 
-import io.domisum.lib.auxiliumlib.util.java.thread.ThreadUtil;
 import io.domisum.lib.auxiliumlib.util.DurationUtil;
+import io.domisum.lib.auxiliumlib.util.java.thread.ThreadUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
@@ -9,80 +9,81 @@ import java.io.InputStream;
 import java.time.Instant;
 
 @RequiredArgsConstructor
-public class ThrottlingInputStream extends InputStream
+class ThrottlingInputStream
+		extends InputStream
 {
-
+	
 	// INPUT
 	private final InputStream backingStream;
 	private final long bytesPerSecond;
-
+	
 	// STATUS
-	private Instant start;
-	private long bytesUsed = 0;
-
-
+	private Instant readStart;
+	private long byteReadSlotsUsed = 0;
+	
+	
 	// THROTTLING
 	private long getBytesUseLimit()
 	{
 		final int secondsPerMinute = 60;
-
-		var age = DurationUtil.toNow(start);
+		
+		var age = DurationUtil.toNow(readStart);
 		double secondsSinceStart = DurationUtil.getMinutesDecimal(age)*secondsPerMinute;
-
 		long totalBytesAvailable = Math.round(bytesPerSecond*secondsSinceStart);
 		return totalBytesAvailable;
 	}
-
+	
 	private int bytesUsable()
 	{
-		if(start == null)
-			start = Instant.now();
-
-		long usable = getBytesUseLimit()-bytesUsed;
-		if(usable > (3*bytesPerSecond)) // prevent accumulation of usable bytes by backlog
+		if(readStart == null)
+			readStart = Instant.now();
+		
+		long usable = getBytesUseLimit()-byteReadSlotsUsed;
+		if(usable>(3*bytesPerSecond)) // prevent accumulation of usable bytes by backlog
 		{
-			bytesUsed += bytesPerSecond;
+			byteReadSlotsUsed += bytesPerSecond;
 			usable -= bytesPerSecond;
 		}
-
-		if(usable < 0)
+		if(usable<0)
 			usable = 0;
-
+		
 		return (int) usable;
 	}
-
-
+	
+	
 	// INPUT STREAM
 	@Override
-	public int read() throws IOException
+	public int read()
+			throws IOException
 	{
 		var read = backingStream.read();
 		if(read == -1)
 			return -1;
-
-		while(bytesUsable() <= 0)
+		
+		while(bytesUsable()<=0)
 			ThreadUtil.sleep(10);
-
-		bytesUsed++;
+		
+		byteReadSlotsUsed++;
 		return read;
 	}
-
+	
 	@Override
-	public synchronized int available() throws IOException
+	public synchronized int available()
+			throws IOException
 	{
-		long available = bytesUsable();
-
+		int available = bytesUsable();
 		int backingAvailable = backingStream.available();
-		if(backingAvailable < available)
+		if(backingAvailable<available)
 			available = backingAvailable;
-
-		return (int) available;
+		
+		return available;
 	}
-
+	
 	@Override
-	public void close() throws IOException
+	public void close()
+			throws IOException
 	{
 		backingStream.close();
 	}
-
+	
 }

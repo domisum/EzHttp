@@ -1,8 +1,8 @@
 package io.domisum.lib.ezhttp.response.bodyreaders;
 
-import io.domisum.lib.ezhttp.response.EzHttpResponseBodyReader;
-import io.domisum.lib.auxiliumlib.util.file.FileUtil;
 import io.domisum.lib.auxiliumlib.annotations.API;
+import io.domisum.lib.auxiliumlib.util.file.FileUtil;
+import io.domisum.lib.ezhttp.response.EzHttpResponseBodyReader;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
@@ -11,12 +11,14 @@ import java.io.InputStream;
 
 @API
 @RequiredArgsConstructor
-public class EzHttpWriteToTempFileBodyReader implements EzHttpResponseBodyReader<File>
+public class EzHttpWriteToTempFileBodyReader
+		implements EzHttpResponseBodyReader<File>
 {
-
+	
 	// READ
 	@Override
-	public File read(InputStream inputStream) throws IOException
+	public File read(InputStream inputStream)
+			throws IOException
 	{
 		File file = FileUtil.createTemporaryFile();
 		try
@@ -30,5 +32,5 @@ public class EzHttpWriteToTempFileBodyReader implements EzHttpResponseBodyReader
 			throw e;
 		}
 	}
-
+	
 }

@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp;
 
-import io.domisum.lib.auxiliumlib.display.DurationDisplay;
 import io.domisum.lib.auxiliumlib.annotations.API;
+import io.domisum.lib.auxiliumlib.display.DurationDisplay;
 import io.domisum.lib.auxiliumlib.exceptions.IncompleteCodeError;
 import io.domisum.lib.ezhttp.header.EzHttpHeader;
 import io.domisum.lib.ezhttp.request.EzHttpRequest;
@@ -39,14 +39,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EzHttpRequestEnvoy<T>
 {
-
+	
 	// CONSTANTS
 	private final EzHttpResponseBodyReader<String> failureResponseBodyReader = new EzHttpStringBodyReader();
-
+	
 	// BASE SETTINGS
 	private final EzHttpRequest request;
 	private final EzHttpResponseBodyReader<T> successResponseBodyReader;
-
+	
 	// ADDTITIONAL SETTINGS
 	@Setter
 	private boolean cancelOnInterrupt = true;
@@ -54,34 +54,36 @@ public class EzHttpRequestEnvoy<T>
 	private Duration timeout = Duration.ofMinutes(1);
 	@Setter
 	private boolean followRedirects = true;
-
+	
 	private Double uploadSpeedCapMibitPerSecond = null;
-
-
+	
+	
 	// SETTERS
 	@API
 	public void setUploadSpeedCapMibitPerSecond(@Nullable Integer uploadSpeedCap)
 	{
-		Double uploadSpeedCapDouble = (uploadSpeedCap == null) ? null : uploadSpeedCap.doubleValue();
+		Double uploadSpeedCapDouble = (uploadSpeedCap == null) ?
+				null :
+				uploadSpeedCap.doubleValue();
 		setUploadSpeedCapMibitPerSecond(uploadSpeedCapDouble);
 	}
-
+	
 	@API
 	public void setUploadSpeedCapMibitPerSecond(@Nullable Double uploadSpeedCap)
 	{
 		if(uploadSpeedCap != null)
-			Validate.isTrue(uploadSpeedCap > 0, "upload speed cap has to be greater than zero, was "+uploadSpeedCap);
-
+			Validate.isTrue(uploadSpeedCap>0, "upload speed cap has to be greater than zero, was "+uploadSpeedCap);
+		
 		uploadSpeedCapMibitPerSecond = uploadSpeedCap;
 	}
-
-
+	
+	
 	// SEND
 	@API
 	public EzHttpIoResponse<T> send()
 	{
 		var apacheRequest = buildApacheRequest();
-
+		
 		var watchdogTask = EzHttpRequestWatchdog.watch(apacheRequest, timeout, cancelOnInterrupt);
 		try(var httpClient = buildHttpClient(); var response = httpClient.execute(apacheRequest))
 		{
@@ -92,16 +94,16 @@ public class EzHttpRequestEnvoy<T>
 		catch(IOException e)
 		{
 			IOException exception = e;
-			if(watchdogTask.wasRequestThreadInterrupted())
+			if(watchdogTask.wasInterrupted())
 				exception = new IoInterruptedException();
 			else if(watchdogTask.didTimeout())
 				exception = new IoTimeoutException(watchdogTask.getDuration());
-
+			
 			return new EzHttpIoResponse<>(null, exception);
 		}
 	}
-
-
+	
+	
 	// BUILD CLIENT
 	private CloseableHttpClient buildHttpClient()
 	{
@@ -109,10 +111,10 @@ public class EzHttpRequestEnvoy<T>
 		clientBuilder.setDefaultRequestConfig(buildRequestConfig());
 		if(!followRedirects)
 			clientBuilder.disableRedirectHandling();
-
+		
 		return clientBuilder.build();
 	}
-
+	
 	private RequestConfig buildRequestConfig()
 	{
 		var requestConfigBuilder = RequestConfig.custom();
@@ -120,23 +122,23 @@ public class EzHttpRequestEnvoy<T>
 				.setSocketTimeout((int) timeout.toMillis())
 				.setConnectTimeout((int) timeout.toMillis())
 				.setConnectionRequestTimeout((int) timeout.toMillis());
-
+		
 		return requestConfigBuilder.build();
 	}
-
-
+	
+	
 	// BUILD REQUEST
 	private HttpUriRequest buildApacheRequest()
 	{
 		var apacheRequest = getRawMethodRequest();
-
+		
 		addHeadersToRequest(apacheRequest);
 		if(request.getBody() != null)
 			addBodyToRequest(apacheRequest);
-
+		
 		return apacheRequest;
 	}
-
+	
 	private HttpRequestBase getRawMethodRequest()
 	{
 		var method = request.getMethod();
@@ -153,17 +155,17 @@ public class EzHttpRequestEnvoy<T>
 			default: throw new IncompleteCodeError("no request defined for method "+method);
 		}
 	}
-
+	
 	private void addHeadersToRequest(HttpMessage apacheRequest)
 	{
 		for(var header : request.getHeaders())
 			apacheRequest.addHeader(header.getKey(), header.getValue());
 	}
-
+	
 	private void addBodyToRequest(HttpMessage apacheRequest)
 	{
 		apacheRequest.addHeader("Content-Type", request.getBody().getContentType());
-
+		
 		var bodyInputStream = request.getBody().getAsInputStream();
 		if(uploadSpeedCapMibitPerSecond != null)
 		{
@@ -174,22 +176,27 @@ public class EzHttpRequestEnvoy<T>
 		}
 		((HttpEntityEnclosingRequest) apacheRequest).setEntity(new InputStreamEntity(bodyInputStream));
 	}
-
-
+	
+	
 	// READ RESPONSE
-	private EzHttpResponse<T> readResponse(HttpResponse response) throws IOException
+	private EzHttpResponse<T> readResponse(HttpResponse response)
+			throws IOException
 	{
 		int statusCode = response.getStatusLine().getStatusCode();
 		int statusCodeFirstDigit = statusCode/100;
 		boolean successful = (statusCodeFirstDigit == 2) || (statusCodeFirstDigit == 3);
-
+		
 		var headers = readResponseHeaders(response);
-		T successResponseBody = successful ? onSuccessReadResponseBody(response) : null;
-		String failureResponseBody = successful ? null : onFailureReadResponseBody(response);
-
+		T successResponseBody = successful ?
+				onSuccessReadResponseBody(response) :
+				null;
+		String failureResponseBody = successful ?
+				null :
+				onFailureReadResponseBody(response);
+		
 		return new EzHttpResponse<>(statusCode, headers, successResponseBody, failureResponseBody);
 	}
-
+	
 	private List<EzHttpHeader> readResponseHeaders(HttpResponse response)
 	{
 		var headers = new ArrayList<EzHttpHeader>();
@@ -197,45 +204,51 @@ public class EzHttpRequestEnvoy<T>
 			headers.add(new EzHttpHeader(header.getName(), header.getValue()));
 		return headers;
 	}
-
-	private T onSuccessReadResponseBody(HttpResponse response) throws IOException
+	
+	private T onSuccessReadResponseBody(HttpResponse response)
+			throws IOException
 	{
 		try(var responseBodyStream = response.getEntity().getContent())
 		{
 			return successResponseBodyReader.read(responseBodyStream);
 		}
 	}
-
-	private String onFailureReadResponseBody(HttpResponse response) throws IOException
+	
+	private String onFailureReadResponseBody(HttpResponse response)
+			throws IOException
 	{
 		try(var responseBodyStream = response.getEntity().getContent())
 		{
 			return failureResponseBodyReader.read(responseBodyStream);
 		}
 	}
-
-
+	
+	
 	// ABORTION
-	public static class IoTimeoutException extends IOException
+	@API
+	public static class IoTimeoutException
+			extends IOException
 	{
-
+		
 		// INIT
 		public IoTimeoutException(Duration timeout)
 		{
-			super("Request aborted after timeout of "+DurationDisplay.display(timeout));
+			super("request aborted after timeout of "+DurationDisplay.display(timeout));
 		}
-
+		
 	}
-
-	public static class IoInterruptedException extends IOException
+	
+	@API
+	public static class IoInterruptedException
+			extends IOException
 	{
-
+		
 		// INIT
 		public IoInterruptedException()
 		{
 			super("Request aborted due to thread interrupt");
 		}
-
+		
 	}
-
+	
 }

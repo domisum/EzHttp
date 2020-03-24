@@ -1,13 +1,14 @@
 package io.domisum.lib.ezhttp.response;
 
-import io.domisum.lib.ezhttp.header.EzHttpHeader;
 import io.domisum.lib.auxiliumlib.annotations.API;
+import io.domisum.lib.ezhttp.header.EzHttpHeader;
 import lombok.Getter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public class EzHttpResponse<T>
 {
@@ -56,7 +57,7 @@ public class EzHttpResponse<T>
 	}
 
 	@API
-	public T getSuccessBodyOrThrowHttpIoException(String wrappedMessage) throws IOException
+	public T getSuccessBodyOrThrowHttpIoException(Function<IOException, IOException> wrapper) throws IOException
 	{
 		try
 		{
@@ -64,8 +65,14 @@ public class EzHttpResponse<T>
 		}
 		catch(IOException e)
 		{
-			throw new IOException(wrappedMessage, e);
+			throw wrapper.apply(e);
 		}
+	}
+
+	@API
+	public T getSuccessBodyOrThrowHttpIoException(String wrappedMessage) throws IOException
+	{
+		return getSuccessBodyOrThrowHttpIoException(e->new IOException(wrappedMessage, e));
 	}
 
 

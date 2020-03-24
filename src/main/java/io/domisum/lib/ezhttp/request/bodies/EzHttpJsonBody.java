@@ -1,6 +1,6 @@
 package io.domisum.lib.ezhttp.request.bodies;
 
-import io.domisum.lib.auxiliumlib.util.java.annotations.API;
+import io.domisum.lib.auxiliumlib.annotations.API;
 
 import java.nio.charset.Charset;
 

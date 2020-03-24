@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp;
 
-import io.domisum.lib.auxiliumlib.util.java.ThreadUtil;
-import io.domisum.lib.auxiliumlib.util.time.DurationUtil;
+import io.domisum.lib.auxiliumlib.util.java.thread.ThreadUtil;
+import io.domisum.lib.auxiliumlib.util.DurationUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

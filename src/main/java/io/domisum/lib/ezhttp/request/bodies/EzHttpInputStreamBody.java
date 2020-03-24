@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp.request.bodies;
 
 import io.domisum.lib.ezhttp.request.EzHttpRequestBody;
-import io.domisum.lib.auxiliumlib.util.java.annotations.API;
+import io.domisum.lib.auxiliumlib.annotations.API;
 import lombok.RequiredArgsConstructor;
 
 import java.io.InputStream;

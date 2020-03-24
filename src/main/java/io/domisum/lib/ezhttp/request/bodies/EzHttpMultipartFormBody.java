@@ -1,7 +1,6 @@
 package io.domisum.lib.ezhttp.request.bodies;
 
-import io.domisum.lib.auxiliumlib.util.StringUtil;
-import io.domisum.lib.auxiliumlib.util.java.annotations.API;
+import io.domisum.lib.auxiliumlib.annotations.API;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,7 +26,7 @@ public class EzHttpMultipartFormBody extends EzHttpPlaintextBody
 		while(true)
 		{
 			// not random to make this method deterministic
-			String randomDelimiterPart = StringUtil.repeat("j", delimiterAdditionalPartLength);
+			String randomDelimiterPart = "j".repeat(delimiterAdditionalPartLength);
 			String delimiter = "----WebKitFormBoundary"+randomDelimiterPart;
 
 			for(Entry<String, String> entry : values.entrySet())

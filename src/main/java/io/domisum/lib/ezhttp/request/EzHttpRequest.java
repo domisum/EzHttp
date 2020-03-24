@@ -2,7 +2,7 @@ package io.domisum.lib.ezhttp.request;
 
 import io.domisum.lib.ezhttp.header.EzHttpHeader;
 import io.domisum.lib.auxiliumlib.datacontainers.AbstractURL;
-import io.domisum.lib.auxiliumlib.util.java.annotations.API;
+import io.domisum.lib.auxiliumlib.annotations.API;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

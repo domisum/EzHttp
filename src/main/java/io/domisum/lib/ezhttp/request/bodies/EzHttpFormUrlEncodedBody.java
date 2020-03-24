@@ -2,7 +2,7 @@ package io.domisum.lib.ezhttp.request.bodies;
 
 import io.domisum.lib.auxiliumlib.datacontainers.AbstractURL;
 import io.domisum.lib.auxiliumlib.util.StringUtil;
-import io.domisum.lib.auxiliumlib.util.java.annotations.API;
+import io.domisum.lib.auxiliumlib.annotations.API;
 
 import java.util.ArrayList;
 import java.util.Map;

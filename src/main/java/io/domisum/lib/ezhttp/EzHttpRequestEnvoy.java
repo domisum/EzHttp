@@ -1,8 +1,8 @@
 package io.domisum.lib.ezhttp;
 
 import io.domisum.lib.auxiliumlib.display.DurationDisplay;
-import io.domisum.lib.auxiliumlib.util.java.annotations.API;
-import io.domisum.lib.auxiliumlib.util.java.exceptions.IncompleteCodeError;
+import io.domisum.lib.auxiliumlib.annotations.API;
+import io.domisum.lib.auxiliumlib.exceptions.IncompleteCodeError;
 import io.domisum.lib.ezhttp.header.EzHttpHeader;
 import io.domisum.lib.ezhttp.request.EzHttpRequest;
 import io.domisum.lib.ezhttp.response.EzHttpIoResponse;

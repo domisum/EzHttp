@@ -1,6 +1,6 @@
 package io.domisum.lib.ezhttp.response;
 
-import io.domisum.lib.auxiliumlib.contracts.source.io.IoOptional;
+import io.domisum.lib.auxiliumlib.contracts.iosource.IoOptional;
 
 import java.io.IOException;
 

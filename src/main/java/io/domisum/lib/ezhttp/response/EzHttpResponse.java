@@ -1,6 +1,6 @@
 package io.domisum.lib.ezhttp.response;
 
-import io.domisum.lib.ezhttp.EzHttpHeader;
+import io.domisum.lib.ezhttp.header.EzHttpHeader;
 import io.domisum.lib.auxiliumlib.util.java.annotations.API;
 import lombok.Getter;
 

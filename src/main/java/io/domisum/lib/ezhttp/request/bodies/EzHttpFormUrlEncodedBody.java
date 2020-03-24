@@ -5,9 +5,7 @@ import io.domisum.lib.auxiliumlib.util.StringUtil;
 import io.domisum.lib.auxiliumlib.util.java.annotations.API;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 @API
 public class EzHttpFormUrlEncodedBody extends EzHttpPlaintextBody
@@ -22,9 +20,8 @@ public class EzHttpFormUrlEncodedBody extends EzHttpPlaintextBody
 
 	private static String encodeValueMap(Map<String, String> values)
 	{
-		List<String> keyValuePairs = new ArrayList<>();
-
-		for(Entry<String, String> entry : values.entrySet())
+		var keyValuePairs = new ArrayList<String>();
+		for(var entry : values.entrySet())
 		{
 			String escapedKey = AbstractURL.escapeUrlParameterString(entry.getKey());
 			String escapedValue = AbstractURL.escapeUrlParameterString(entry.getValue());

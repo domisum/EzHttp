@@ -1,4 +1,4 @@
-package io.domisum.lib.ezhttp;
+package io.domisum.lib.ezhttp.header;
 
 import lombok.Getter;
 import org.apache.commons.lang3.Validate;

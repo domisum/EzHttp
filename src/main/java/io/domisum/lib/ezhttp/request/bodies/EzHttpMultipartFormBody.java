@@ -18,7 +18,6 @@ public class EzHttpMultipartFormBody extends EzHttpPlaintextBody
 	public EzHttpMultipartFormBody(Map<String, String> values)
 	{
 		super(valueMapToBodyString(values));
-
 		delimiter = determineDelimiter(values);
 	}
 

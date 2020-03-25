@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp.request;
 
 import io.domisum.lib.auxiliumlib.annotations.API;
-import io.domisum.lib.auxiliumlib.datacontainers.AbstractURL;
+import io.domisum.lib.auxiliumlib.datacontainers.AbstractUrl;
 import io.domisum.lib.ezhttp.header.EzHttpHeader;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class EzHttpRequest
 	@Getter
 	private final EzHttpRequestMethod method;
 	@Getter
-	private final AbstractURL url;
+	private final AbstractUrl url;
 	
 	private final List<EzHttpHeader> headers = new ArrayList<>();
 	
@@ -29,7 +29,7 @@ public class EzHttpRequest
 	
 	// INIT
 	@API
-	public static EzHttpRequest get(AbstractURL url)
+	public static EzHttpRequest get(AbstractUrl url)
 	{
 		return new EzHttpRequest(EzHttpRequestMethod.GET, url);
 	}

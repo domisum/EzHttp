@@ -85,7 +85,7 @@ public class EzHttpResponse<T>
 	{
 		if(isSuccess())
 			return;
-		throw new IOException("response HTTP "+statusCode+", body:\n"+failureBody);
+		throw getFailureIoException();
 	}
 	
 	@API
@@ -100,6 +100,14 @@ public class EzHttpResponse<T>
 		{
 			throw new IOException(wrappedMessage, e);
 		}
+	}
+	
+	@API
+	public IOException getFailureIoException()
+	{
+		if(isSuccess())
+			throw new IllegalStateException("can't get failureIoException of successful response");
+		return new IOException("HTTP "+statusCode+", body:\n"+failureBody);
 	}
 	
 }

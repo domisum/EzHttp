@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @API
-public class EasyUrl
+public class EzUrl
 {
 	
 	// ATTRIBUTES
@@ -21,7 +21,7 @@ public class EasyUrl
 	
 	// INIT
 	@API
-	public EasyUrl(String url)
+	public EzUrl(String url)
 	{
 		String beingCleanedUrl = url;
 		while(beingCleanedUrl.endsWith("/"))
@@ -31,7 +31,7 @@ public class EasyUrl
 	}
 	
 	@API
-	public EasyUrl(EasyUrl base, String extension)
+	public EzUrl(EzUrl base, String extension)
 	{
 		this(base.combineWith(extension));
 	}
@@ -44,7 +44,7 @@ public class EasyUrl
 	}
 	
 	@API
-	public EasyUrl(EasyUrl base, Collection<Parameter> parameters)
+	public EzUrl(EzUrl base, Collection<Parameter> parameters)
 	{
 		String url = base.url;
 		for(var parameter : parameters)
@@ -57,7 +57,7 @@ public class EasyUrl
 	}
 	
 	@API
-	public EasyUrl(EasyUrl base, Parameter... parameters)
+	public EzUrl(EzUrl base, Parameter... parameters)
 	{
 		this(base, Arrays.asList(parameters));
 	}

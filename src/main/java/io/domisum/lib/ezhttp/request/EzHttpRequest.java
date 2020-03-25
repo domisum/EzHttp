@@ -17,7 +17,7 @@ public class EzHttpRequest
 	@Getter
 	private final EzHttpRequestMethod method;
 	@Getter
-	private final EasyUrl url;
+	private final EzUrl url;
 	
 	private final List<EzHttpHeader> headers = new ArrayList<>();
 	
@@ -28,7 +28,7 @@ public class EzHttpRequest
 	
 	// INIT
 	@API
-	public static EzHttpRequest get(EasyUrl url)
+	public static EzHttpRequest get(EzUrl url)
 	{
 		return new EzHttpRequest(EzHttpRequestMethod.GET, url);
 	}

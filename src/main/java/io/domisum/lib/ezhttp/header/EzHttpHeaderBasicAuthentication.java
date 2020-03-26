@@ -5,12 +5,13 @@ import io.domisum.lib.auxiliumlib.annotations.API;
 import java.util.Base64;
 
 @API
-public class EzHttpHeaderUsernamePasswordAuthentication extends EzHttpHeader
+public class EzHttpHeaderBasicAuthentication
+		extends EzHttpHeader
 {
 
 	// INIT
 	@API
-	public EzHttpHeaderUsernamePasswordAuthentication(String username, String password)
+	public EzHttpHeaderBasicAuthentication(String username, String password)
 	{
 		super("Authorization", "Basic "+encode(username, password));
 	}

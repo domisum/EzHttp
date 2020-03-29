@@ -12,6 +12,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -52,20 +53,18 @@ public class EzUrl
 	@API
 	public EzUrl(String protocol, String host, Integer port, String path, Collection<QueryParameter> queryParameters)
 	{
-		path = cleanPath(path);
-		if(queryParameters == null)
-			queryParameters = new ArrayList<>();
+		ValidationUtil.notBlank(protocol, "protocol");
+		ValidationUtil.notBlank(host, "host");
+		if(port != null)
+			ValidationUtil.validatePortInRange(port, "port");
+		if(path != null && path.contains("//"))
+			throw new IllegalArgumentException("path contains empty segment: '"+path+"'");
 		
 		this.protocol = protocol.toLowerCase();
 		this.host = host.toLowerCase();
 		this.port = port;
-		this.path = path;
-		this.queryParameters = List.copyOf(queryParameters);
-		
-		ValidationUtil.notBlank(this.protocol, "protocol");
-		ValidationUtil.notBlank(this.host, "host");
-		if(this.port != null)
-			ValidationUtil.validatePortInRange(this.port, "port");
+		this.path = cleanPath(path);
+		this.queryParameters = queryParameters == null ? Collections.emptyList() : List.copyOf(queryParameters);
 	}
 	
 	private static String cleanPath(String path)
@@ -73,18 +72,13 @@ public class EzUrl
 		if(path == null)
 			return null;
 		
-		if(path.contains("//"))
-			throw new IllegalArgumentException("path contains empty segment: '"+path+"'");
-		
 		if(path.startsWith("/"))
 			path = path.substring(1);
-		
 		if(path.endsWith("/"))
 			path = path.substring(0, path.length()-1);
 		
 		if(path.isEmpty())
 			return null;
-		
 		return path;
 	}
 	

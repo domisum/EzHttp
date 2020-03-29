@@ -72,7 +72,7 @@ public class EzHttpRequestEnvoy<T>
 	public void setUploadSpeedCapMibitPerSecond(@Nullable Double uploadSpeedCap)
 	{
 		if(uploadSpeedCap != null)
-			Validate.isTrue(uploadSpeedCap>0, "upload speed cap has to be greater than zero, was "+uploadSpeedCap);
+			Validate.isTrue(uploadSpeedCap > 0, "upload speed cap has to be greater than zero, was "+uploadSpeedCap);
 		
 		uploadSpeedCapMibitPerSecond = uploadSpeedCap;
 	}
@@ -142,16 +142,16 @@ public class EzHttpRequestEnvoy<T>
 	private HttpRequestBase getRawMethodRequest()
 	{
 		var method = request.getMethod();
-		var url = request.getUrl();
+		var url = request.getUrl().toStringEscaped();
 		switch(method)
 		{
-			case GET: return new HttpGet(url.toString());
-			case HEAD: return new HttpHead(url.toString());
-			case POST: return new HttpPost(url.toString());
-			case PUT: return new HttpPut(url.toString());
-			case DELETE: return new HttpDelete(url.toString());
-			case OPTIONS: return new HttpOptions(url.toString());
-			case PATCH: return new HttpPatch(url.toString());
+			case GET: return new HttpGet(url);
+			case HEAD: return new HttpHead(url);
+			case POST: return new HttpPost(url);
+			case PUT: return new HttpPut(url);
+			case DELETE: return new HttpDelete(url);
+			case OPTIONS: return new HttpOptions(url);
+			case PATCH: return new HttpPatch(url);
 			default: throw new IncompleteCodeError("no request defined for method "+method);
 		}
 	}

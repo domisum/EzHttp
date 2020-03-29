@@ -112,19 +112,35 @@ public class EzUrl
 	@Override
 	public String toString()
 	{
+		return toString(false);
+	}
+	
+	public String toStringEscaped()
+	{
+		return toString(true);
+	}
+	
+	private String toString(boolean escaped)
+	{
 		String url = protocol+"://"+host;
 		
 		if(port != null)
 			url += ":"+port;
 		
 		if(path != null)
-			url += "/"+escapePath(path);
+		{
+			String path = escaped ? escapePath(this.path) : this.path;
+			url += "/"+path;
+		}
 		
 		if(queryParameters.size() > 0)
 		{
 			var queryParameterStrings = new ArrayList<String>();
 			for(var queryParameter : queryParameters)
-				queryParameterStrings.add(queryParameter.getAsEscapedKeyValuePair());
+			{
+				String queryParameterString = escaped ? queryParameter.getAsEscapedKeyValuePair() : queryParameter.getAsKeyValuePair();
+				queryParameterStrings.add(queryParameterString);
+			}
 			
 			String queryString = StringUtil.listToString(queryParameterStrings, "&");
 			url += "?"+queryString;
@@ -203,6 +219,11 @@ public class EzUrl
 		
 		
 		// GETTERS
+		public String getAsKeyValuePair()
+		{
+			return key+"="+value;
+		}
+		
 		public String getAsEscapedKeyValuePair()
 		{
 			return escapeString(key)+"="+escapeString(value);

@@ -17,8 +17,6 @@ public class EzUrlParserTest
 	{
 		assertParseUnescapedEquals(new EzUrl("https", "www.google.com", null, null, null), "https://www.google.com");
 		assertParseUnescapedEquals(new EzUrl("https", "www.google.com", null, null, null), "https://www.google.com/");
-		assertParseUnescapedEquals(new EzUrl("https", "www.google.com", null, null, null), "https://www.google.com/");
-		assertParseUnescapedEquals(new EzUrl("https", "www.google.com", null, null, null), "https://www.google.com");
 	}
 	
 	@Test
@@ -36,35 +34,35 @@ public class EzUrlParserTest
 	@Test
 	public void testGeneralWrong()
 	{
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("https://google.com#"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("https://google.com#ok"));
+		assertParseUnescapedFails("https://google.com#");
+		assertParseUnescapedFails("https://google.com#ok");
 	}
 	
 	@Test
 	public void testWrongProtocol()
 	{
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("www.google.com"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("https://www.google.com://ok"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("://www.google.com"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("://://www.google.com"));
+		assertParseUnescapedFails("www.google.com");
+		assertParseUnescapedFails("https://www.google.com://ok");
+		assertParseUnescapedFails("://www.google.com");
+		assertParseUnescapedFails("://://www.google.com");
 	}
 	
 	@Test
 	public void testWrongHost()
 	{
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("http://"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("http:///path"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("http://:381"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("http://?key=value"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("http://#chapter1"));
+		assertParseUnescapedFails("http://");
+		assertParseUnescapedFails("http:///path");
+		assertParseUnescapedFails("http://:381");
+		assertParseUnescapedFails("http://?key=value");
+		assertParseUnescapedFails("http://#chapter1");
 	}
 	
 	@Test
 	public void testWrongPort()
 	{
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("http://localhost:"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("http://localhost:asdf"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("http://localhost:-ok"));
+		assertParseUnescapedFails("http://localhost:");
+		assertParseUnescapedFails("http://localhost:asdf");
+		assertParseUnescapedFails("http://localhost:-ok");
 	}
 	
 	@Test
@@ -76,14 +74,14 @@ public class EzUrlParserTest
 	@Test
 	public void testWrongQueryString()
 	{
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("https://google.com?"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("https://google.com?&"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("https://google.com?="));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("https://google.com?asd="));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("https://google.com?=jkl"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("https://google.com?ok=boomer&"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("https://google.com?&ben=libtards"));
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped("https://google.com?&&rekt=libtards"));
+		assertParseUnescapedFails("https://google.com?");
+		assertParseUnescapedFails("https://google.com?&");
+		assertParseUnescapedFails("https://google.com?=");
+		assertParseUnescapedFails("https://google.com?asd=");
+		assertParseUnescapedFails("https://google.com?=jkl");
+		assertParseUnescapedFails("https://google.com?ok=boomer&");
+		assertParseUnescapedFails("https://google.com?&ben=libtards");
+		assertParseUnescapedFails("https://google.com?&&rekt=libtards");
 	}
 	
 	
@@ -93,11 +91,16 @@ public class EzUrlParserTest
 		return Arrays.asList(new QueryParameter(key1, value1), new QueryParameter(key2, value2));
 	}
 	
-	// ASSERT
+	// ACT & ASSERT
 	private void assertParseUnescapedEquals(EzUrl url, String toParse)
 	{
 		var parsed = EzUrlParser.parseUnescaped(toParse);
 		Assertions.assertEquals(url, parsed);
+	}
+	
+	private void assertParseUnescapedFails(String url)
+	{
+		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped(url));
 	}
 	
 }

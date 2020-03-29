@@ -73,6 +73,9 @@ public class EzUrl
 		if(path == null)
 			return null;
 		
+		if(path.contains("//"))
+			throw new IllegalArgumentException("path contains empty segment: '"+path+"'");
+		
 		if(path.startsWith("/"))
 			path = path.substring(1);
 		
@@ -109,12 +112,19 @@ public class EzUrl
 	@Override
 	public String toString()
 	{
-		return toString(false);
+		return toStringEscaped();
 	}
 	
+	@API
 	public String toStringEscaped()
 	{
 		return toString(true);
+	}
+	
+	@API
+	public String toStringUnescaped()
+	{
+		return toString(false);
 	}
 	
 	private String toString(boolean escaped)

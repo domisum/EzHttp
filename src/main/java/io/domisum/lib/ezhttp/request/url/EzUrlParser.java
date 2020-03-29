@@ -1,6 +1,7 @@
 package io.domisum.lib.ezhttp.request.url;
 
 import io.domisum.lib.auxiliumlib.annotations.API;
+import io.domisum.lib.auxiliumlib.util.StringUtil;
 import io.domisum.lib.ezhttp.request.url.EzUrl.QueryParameter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public final class EzUrlParser
 	
 	// STATUS
 	private String separatorBeforeRemainder = null;
-	private String remainder = url;
+	private String remainder = null;
 	
 	
 	// STATIC USAGE
@@ -41,6 +42,8 @@ public final class EzUrlParser
 	// PARSE
 	private EzUrl parse()
 	{
+		remainder = url;
+		
 		String protocol = readProtocol();
 		String host = readComponent(null, this::parseHost, ':', '/', '?', '#');
 		Integer port = readComponent(":", this::parsePort, '/', '?', '#');
@@ -55,18 +58,18 @@ public final class EzUrlParser
 	{
 		final var separator = "://";
 		
-		var splitAfterProtocol = remainder.split(separator);
-		if(splitAfterProtocol.length == 0)
+		var splitAfterProtocol = StringUtil.split(remainder, separator);
+		if(splitAfterProtocol.size() == 0)
 			throw parseFail("url has to contain protocol");
-		if(splitAfterProtocol.length == 1)
+		if(splitAfterProtocol.size() == 1)
 			throw parseFail("url has to contain a protocol and a remaining part");
-		if(splitAfterProtocol.length > 2)
+		if(splitAfterProtocol.size() > 2)
 			throw parseFail("url contains too many protocol separators");
 		
-		String protocol = splitAfterProtocol[0];
+		String protocol = splitAfterProtocol.get(0);
 		
 		separatorBeforeRemainder = separator;
-		remainder = splitAfterProtocol[1];
+		remainder = splitAfterProtocol.get(1);
 		
 		return protocol;
 	}
@@ -149,19 +152,28 @@ public final class EzUrlParser
 	
 	private Set<QueryParameter> parseQueryParameters(String queryString)
 	{
-		String[] parametersString = queryString.split("&");
-		if(parametersString.length == 0)
+		if(queryString.isEmpty())
 			throw parseFail("query string can't be empty");
 		
+		var parametersAsString = StringUtil.split(queryString, "&");
 		var queryParameters = new HashSet<QueryParameter>();
-		for(String parameter : parametersString)
+		for(String parameter : parametersAsString)
 		{
-			String[] parameterSplit = parameter.split("=");
-			if(parameterSplit.length != 2)
-				throw parseFail("parameter does not follow key=value schema: '"+parameter+"'");
+			if(parameter.isEmpty())
+				throw parseFail("parameter in query string can't be empty");
 			
-			String key = parameterSplit[0];
-			String value = parameterSplit[1];
+			var parameterSplit = StringUtil.split(parameter, "=");
+			if(parameterSplit.size() != 2)
+				throw parseFail("parameter in query string does not follow key=value schema: '"+parameter+"'");
+			
+			String key = parameterSplit.get(0);
+			String value = parameterSplit.get(1);
+			
+			if(key.isEmpty())
+				throw parseFail("parameter key in query string can't be empty");
+			if(value.isEmpty())
+				throw parseFail("parameter value in query string can't be empty");
+			
 			if(escaped)
 			{
 				key = EzUrl.unescapeString(key);

@@ -6,9 +6,9 @@ import io.domisum.lib.ezhttp.request.url.EzUrl.QueryParameter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.function.Function;
 
 @API
@@ -50,7 +50,7 @@ public final class EzUrlParser
 		String host = readComponent(null, this::parseHost, ':', '/', '?');
 		Integer port = readComponent(":", this::parsePort, '/', '?');
 		String path = readComponent("/", this::parsePath, '?');
-		Set<QueryParameter> queryParameters = readComponent("?", this::parseQueryParameters);
+		List<QueryParameter> queryParameters = readComponent("?", this::parseQueryParameters);
 		
 		return new EzUrl(protocol, host, port, path, queryParameters);
 	}
@@ -151,13 +151,13 @@ public final class EzUrlParser
 		return path;
 	}
 	
-	private Set<QueryParameter> parseQueryParameters(String queryString)
+	private List<QueryParameter> parseQueryParameters(String queryString)
 	{
 		if(queryString.isEmpty())
 			throw parseFail("query string can't be empty");
 		
 		var parametersAsString = StringUtil.split(queryString, "&");
-		var queryParameters = new HashSet<QueryParameter>();
+		var queryParameters = new ArrayList<QueryParameter>();
 		for(String parameter : parametersAsString)
 		{
 			if(parameter.isEmpty())

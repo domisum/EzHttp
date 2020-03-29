@@ -11,7 +11,9 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,7 +31,7 @@ public class EzUrl
 	private final Integer port;
 	@Nullable
 	private final String path;
-	private final Set<QueryParameter> queryParameters;
+	private final List<QueryParameter> queryParameters;
 	
 	
 	// UTIL INIT
@@ -48,17 +50,17 @@ public class EzUrl
 	
 	// INIT
 	@API
-	public EzUrl(String protocol, String host, Integer port, String path, Set<QueryParameter> queryParameters)
+	public EzUrl(String protocol, String host, Integer port, String path, Collection<QueryParameter> queryParameters)
 	{
 		path = cleanPath(path);
 		if(queryParameters == null)
-			queryParameters = new HashSet<>();
+			queryParameters = new ArrayList<>();
 		
 		this.protocol = protocol.toLowerCase();
 		this.host = host.toLowerCase();
 		this.port = port;
 		this.path = path;
-		this.queryParameters = Set.copyOf(queryParameters);
+		this.queryParameters = List.copyOf(queryParameters);
 		
 		ValidationUtil.notBlank(this.protocol, "protocol");
 		ValidationUtil.notBlank(this.host, "host");
@@ -181,6 +183,7 @@ public class EzUrl
 	
 	
 	// PARAMETER
+	@EqualsAndHashCode
 	public static class QueryParameter
 	{
 		

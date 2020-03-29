@@ -86,8 +86,10 @@ public class EzUrl
 	
 	// DERIVE
 	@API
-	public EzUrl extendPath(String pathExtension)
+	public EzUrl withExtendedPath(String pathExtension)
 	{
+		// TODO validate input
+		
 		String basePath = path;
 		pathExtension = cleanPath(pathExtension);
 		

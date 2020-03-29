@@ -11,6 +11,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -99,6 +100,15 @@ public class EzUrl
 			path = basePath+"/"+pathExtension;
 		
 		return new EzUrl(protocol, host, port, path, queryParameters);
+	}
+	
+	@API
+	public EzUrl withParameters(QueryParameter... parameters)
+	{
+		var newParameters = new ArrayList<>(queryParameters);
+		newParameters.addAll(Arrays.asList(parameters));
+		
+		return new EzUrl(protocol, host, port, path, newParameters);
 	}
 	
 	

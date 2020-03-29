@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 @API
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -16,19 +17,11 @@ public final class EzUrlParser
 	
 	// INPUT
 	private final String url;
-	private final boolean escaped; // TODO
+	private final boolean escaped;
 	
 	// STATUS
 	private String separatorBeforeRemainder = null;
 	private String remainder = url;
-	
-	// COMPONENTS
-	private String protocol;
-	private String host;
-	private Integer port = null;
-	private String path = null;
-	private Set<QueryParameter> queryParameters = null;
-	private String fragment = null;
 	
 	
 	// STATIC USAGE
@@ -48,17 +41,17 @@ public final class EzUrlParser
 	// PARSE
 	private EzUrl parse()
 	{
-		readProtocol();
-		readHost();
-		readPort();
-		readPath();
-		readQueryParameters();
-		readFragment();
+		String protocol = readProtocol();
+		String host = readComponent(null, this::parseHost, ':', '/', '?', '#');
+		Integer port = readComponent(":", this::parsePort, '/', '?', '#');
+		String path = readComponent("/", this::parsePath, '?', '#');
+		Set<QueryParameter> queryParameters = readComponent("?", this::parseQueryParameters, '#');
+		String fragment = parseFragment(remainder);
 		
 		return new EzUrl(protocol, host, port, path, queryParameters, fragment);
 	}
 	
-	private void readProtocol()
+	private String readProtocol()
 	{
 		final var separator = "://";
 		
@@ -70,143 +63,40 @@ public final class EzUrlParser
 		if(splitAfterProtocol.length > 2)
 			throw parseFail("url contains too many protocol separators");
 		
-		protocol = splitAfterProtocol[0];
+		String protocol = splitAfterProtocol[0];
 		
 		separatorBeforeRemainder = separator;
 		remainder = splitAfterProtocol[1];
+		
+		return protocol;
 	}
 	
-	private void readHost()
+	private <T> T readComponent(String separatorBefore, Function<String,T> parse, char... separatorsAfter)
 	{
-		Integer separatorAfterHostIndex = minIndexOf(remainder, ':', '/', '?', '#');
-		if(separatorAfterHostIndex == null)
+		if(separatorBefore != null)
+			if(!separatorBeforeRemainder.equals(separatorBefore))
+				return null;
+		
+		Integer separatorAfterComponentIndex = minIndexOf(remainder, separatorsAfter);
+		if(separatorAfterComponentIndex == null)
 		{
-			host = remainder;
+			T componentParsed = parse.apply(remainder);
 			
 			separatorBeforeRemainder = "";
 			remainder = "";
+			
+			return componentParsed;
 		}
 		else
 		{
-			host = remainder.substring(0, separatorAfterHostIndex);
+			String componentString = remainder.substring(0, separatorAfterComponentIndex);
+			T componentParsed = parse.apply(componentString);
 			
-			separatorBeforeRemainder = remainder.charAt(separatorAfterHostIndex)+"";
-			remainder = remainder.substring(separatorAfterHostIndex+1);
-		}
-		
-		if("".equals(host))
-			throw parseFail("host can't be blank");
-	}
-	
-	private void readPort()
-	{
-		if(!":".equals(separatorBeforeRemainder))
-			return;
-		
-		Integer separatorAfterPortIndex = minIndexOf(remainder, '/', '?', '#');
-		if(separatorAfterPortIndex == null)
-		{
-			port = parsePortString(remainder);
+			separatorBeforeRemainder = remainder.charAt(separatorAfterComponentIndex)+"";
+			remainder = remainder.substring(separatorAfterComponentIndex+1);
 			
-			separatorBeforeRemainder = "";
-			remainder = "";
+			return componentParsed;
 		}
-		else
-		{
-			port = parsePortString(remainder.substring(0, separatorAfterPortIndex));
-			
-			separatorBeforeRemainder = remainder.charAt(separatorAfterPortIndex)+"";
-			remainder = remainder.substring(separatorAfterPortIndex+1);
-		}
-	}
-	
-	private int parsePortString(String portString)
-	{
-		try
-		{
-			return Integer.parseInt(portString);
-		}
-		catch(NumberFormatException ignored)
-		{
-			throw parseFail("invalid port: '"+portString+"'");
-		}
-	}
-	
-	private void readPath()
-	{
-		if(!"/".equals(separatorBeforeRemainder))
-			return;
-		
-		Integer separatorAfterPathIndex = minIndexOf(remainder, '?', '#');
-		if(separatorAfterPathIndex == null)
-		{
-			path = remainder;
-			
-			separatorBeforeRemainder = "";
-			remainder = "";
-		}
-		else
-		{
-			path = remainder.substring(0, separatorAfterPathIndex);
-			
-			separatorBeforeRemainder = remainder.charAt(separatorAfterPathIndex)+"";
-			remainder = remainder.substring(separatorAfterPathIndex+1);
-		}
-	}
-	
-	private void readQueryParameters()
-	{
-		if(!"?".equals(separatorBeforeRemainder))
-			return;
-		
-		Integer separatorAfterQueryStringIndex = minIndexOf(remainder, '#');
-		if(separatorAfterQueryStringIndex == null)
-		{
-			queryParameters = parseQueryParameters(remainder);
-			
-			separatorBeforeRemainder = "";
-			remainder = "";
-		}
-		else
-		{
-			String queryString = remainder.substring(0, separatorAfterQueryStringIndex);
-			queryParameters = parseQueryParameters(queryString);
-			
-			separatorBeforeRemainder = remainder.charAt(separatorAfterQueryStringIndex)+"";
-			remainder = remainder.substring(separatorAfterQueryStringIndex+1);
-		}
-	}
-	
-	private Set<QueryParameter> parseQueryParameters(String queryString)
-	{
-		String[] parametersString = queryString.split("&");
-		if(parametersString.length == 0)
-			throw parseFail("query string can't be empty");
-		
-		var queryParameters = new HashSet<QueryParameter>();
-		for(String parameter : parametersString)
-		{
-			String[] parameterSplit = parameter.split("=");
-			if(parameterSplit.length != 2)
-				throw parseFail("parameter does not follow key=value schema: '"+parameter+"'");
-			
-			String key = parameterSplit[0];
-			String value = parameterSplit[1];
-			queryParameters.add(new QueryParameter(key, value));
-		}
-		
-		return queryParameters;
-	}
-	
-	private void readFragment()
-	{
-		fragment = remainder;
-	}
-	
-	
-	private IllegalArgumentException parseFail(String message)
-	{
-		return new IllegalArgumentException(message+": "+url);
 	}
 	
 	private static Integer minIndexOf(String in, char... chars)
@@ -225,6 +115,75 @@ public final class EzUrlParser
 				min = index;
 		
 		return min;
+	}
+	
+	
+	// COMPONENT PARSING
+	private String parseHost(String host)
+	{
+		if("".equals(host))
+			throw parseFail("host can't be blank");
+		
+		return host;
+	}
+	
+	private int parsePort(String portString)
+	{
+		try
+		{
+			return Integer.parseInt(portString);
+		}
+		catch(NumberFormatException ignored)
+		{
+			throw parseFail("invalid port: '"+portString+"'");
+		}
+	}
+	
+	private String parsePath(String path)
+	{
+		if(escaped)
+			path = EzUrl.unescapePath(path);
+		
+		return path;
+	}
+	
+	private Set<QueryParameter> parseQueryParameters(String queryString)
+	{
+		String[] parametersString = queryString.split("&");
+		if(parametersString.length == 0)
+			throw parseFail("query string can't be empty");
+		
+		var queryParameters = new HashSet<QueryParameter>();
+		for(String parameter : parametersString)
+		{
+			String[] parameterSplit = parameter.split("=");
+			if(parameterSplit.length != 2)
+				throw parseFail("parameter does not follow key=value schema: '"+parameter+"'");
+			
+			String key = parameterSplit[0];
+			String value = parameterSplit[1];
+			if(escaped)
+			{
+				key = EzUrl.unescapeString(key);
+				value = EzUrl.unescapeString(value);
+			}
+			
+			queryParameters.add(new QueryParameter(key, value));
+		}
+		
+		return queryParameters;
+	}
+	
+	private String parseFragment(String fragment)
+	{
+		return fragment;
+	}
+	
+	
+	// UTIL
+	private IllegalArgumentException parseFail(String message)
+	{
+		return new IllegalArgumentException(message+": "+url);
 	}
 	
 }

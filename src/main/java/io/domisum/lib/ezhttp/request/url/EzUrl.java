@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import javax.annotation.Nullable;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -212,18 +213,35 @@ public class EzUrl
 	
 	// UTIL
 	@API
-	public static String escapeString(String urlString)
+	public static String escapeString(String string)
 	{
-		return URLEncoder.encode(urlString, StandardCharsets.UTF_8);
+		return URLEncoder.encode(string, StandardCharsets.UTF_8);
 	}
 	
-	private static String escapePath(String path)
+	@API
+	public static String unescapeString(String escapedString)
+	{
+		return URLDecoder.decode(escapedString, StandardCharsets.UTF_8);
+	}
+	
+	@API
+	public static String escapePath(String path)
 	{
 		var escapedSegments = new ArrayList<String>();
 		for(String segment : path.split("/"))
 			escapedSegments.add(escapeString(segment));
 		
 		return StringUtil.listToString(escapedSegments, "/");
+	}
+	
+	@API
+	public static String unescapePath(String escapedPath)
+	{
+		var unescapedSegments = new ArrayList<String>();
+		for(String segment : escapedPath.split("/"))
+			unescapedSegments.add(unescapeString(segment));
+		
+		return StringUtil.listToString(unescapedSegments, "/");
 	}
 	
 }

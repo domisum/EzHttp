@@ -2,6 +2,7 @@ package io.domisum.lib.ezhttp.request;
 
 import io.domisum.lib.auxiliumlib.annotations.API;
 import io.domisum.lib.ezhttp.header.EzHttpHeader;
+import io.domisum.lib.ezhttp.request.url.EzUrl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -15,7 +16,7 @@ public class EzHttpRequest
 {
 	
 	@Getter
-	private final EzHttpRequestMethod method;
+	private final EzHttpMethod method;
 	@Getter
 	private final EzUrl url;
 	
@@ -30,7 +31,7 @@ public class EzHttpRequest
 	@API
 	public static EzHttpRequest get(EzUrl url)
 	{
-		return new EzHttpRequest(EzHttpRequestMethod.GET, url);
+		return new EzHttpRequest(EzHttpMethod.GET, url);
 	}
 	
 	

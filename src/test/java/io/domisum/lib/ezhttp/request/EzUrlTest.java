@@ -1,5 +1,6 @@
 package io.domisum.lib.ezhttp.request;
 
+import io.domisum.lib.ezhttp.request.url.EzUrl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

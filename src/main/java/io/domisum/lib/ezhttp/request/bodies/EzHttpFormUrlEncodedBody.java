@@ -1,6 +1,6 @@
 package io.domisum.lib.ezhttp.request.bodies;
 
-import io.domisum.lib.ezhttp.request.EzUrl;
+import io.domisum.lib.ezhttp.request.url.EzUrl;
 import io.domisum.lib.auxiliumlib.util.StringUtil;
 import io.domisum.lib.auxiliumlib.annotations.API;
 
@@ -23,8 +23,8 @@ public class EzHttpFormUrlEncodedBody extends EzHttpPlaintextBody
 		var keyValuePairs = new ArrayList<String>();
 		for(var entry : values.entrySet())
 		{
-			String escapedKey = EzUrl.escapeUrlParameterString(entry.getKey());
-			String escapedValue = EzUrl.escapeUrlParameterString(entry.getValue());
+			String escapedKey = EzUrl.escapeString(entry.getKey());
+			String escapedValue = EzUrl.escapeString(entry.getValue());
 
 			String keyValuePair = escapedKey+"="+escapedValue;
 			keyValuePairs.add(keyValuePair);

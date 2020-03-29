@@ -30,8 +30,6 @@ public class EzUrl
 	@Nullable
 	private final String path;
 	private final Set<QueryParameter> queryParameters;
-	@Nullable
-	private final String fragment;
 	
 	
 	// UTIL INIT
@@ -50,20 +48,17 @@ public class EzUrl
 	
 	// INIT
 	@API
-	public EzUrl(String protocol, String host, Integer port, String path, Set<QueryParameter> queryParameters, String fragment)
+	public EzUrl(String protocol, String host, Integer port, String path, Set<QueryParameter> queryParameters)
 	{
 		path = cleanPath(path);
 		if(queryParameters == null)
 			queryParameters = new HashSet<>();
-		if(fragment != null && fragment.isEmpty())
-			fragment = null;
 		
 		this.protocol = protocol.toLowerCase();
 		this.host = host.toLowerCase();
 		this.port = port;
 		this.path = path;
 		this.queryParameters = Set.copyOf(queryParameters);
-		this.fragment = fragment;
 		
 		ValidationUtil.notBlank(this.protocol, "protocol");
 		ValidationUtil.notBlank(this.host, "host");
@@ -104,7 +99,7 @@ public class EzUrl
 		else
 			path = basePath+"/"+pathExtension;
 		
-		return new EzUrl(protocol, host, port, path, queryParameters, fragment);
+		return new EzUrl(protocol, host, port, path, queryParameters);
 	}
 	
 	
@@ -145,9 +140,6 @@ public class EzUrl
 			String queryString = StringUtil.listToString(queryParameterStrings, "&");
 			url += "?"+queryString;
 		}
-		
-		if(fragment != null)
-			url += "#"+fragment;
 		
 		return url;
 	}

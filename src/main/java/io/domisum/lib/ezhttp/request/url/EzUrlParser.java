@@ -42,16 +42,17 @@ public final class EzUrlParser
 	// PARSE
 	private EzUrl parse()
 	{
+		if(url.contains("#"))
+			throw parseFail("fragments are not supported");
+		
 		remainder = url;
-		
 		String protocol = readProtocol();
-		String host = readComponent(null, this::parseHost, ':', '/', '?', '#');
-		Integer port = readComponent(":", this::parsePort, '/', '?', '#');
-		String path = readComponent("/", this::parsePath, '?', '#');
-		Set<QueryParameter> queryParameters = readComponent("?", this::parseQueryParameters, '#');
-		String fragment = parseFragment(remainder);
+		String host = readComponent(null, this::parseHost, ':', '/', '?');
+		Integer port = readComponent(":", this::parsePort, '/', '?');
+		String path = readComponent("/", this::parsePath, '?');
+		Set<QueryParameter> queryParameters = readComponent("?", this::parseQueryParameters);
 		
-		return new EzUrl(protocol, host, port, path, queryParameters, fragment);
+		return new EzUrl(protocol, host, port, path, queryParameters);
 	}
 	
 	private String readProtocol()

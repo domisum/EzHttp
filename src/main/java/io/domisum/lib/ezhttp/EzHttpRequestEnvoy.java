@@ -17,7 +17,7 @@ import org.apache.http.HttpMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPatch;
@@ -31,6 +31,7 @@ import org.apache.http.impl.client.HttpClients;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -145,7 +146,7 @@ public class EzHttpRequestEnvoy<T>
 		var url = request.getUrl().toStringEscaped();
 		switch(method)
 		{
-			case GET: return new HttpGet(url);
+			case GET: return new HttpGetAllowingBody(url);
 			case HEAD: return new HttpHead(url);
 			case POST: return new HttpPost(url);
 			case PUT: return new HttpPut(url);
@@ -247,6 +248,32 @@ public class EzHttpRequestEnvoy<T>
 		public IoInterruptedException()
 		{
 			super("Request aborted due to thread interrupt");
+		}
+		
+	}
+	
+	
+	// APACHE FIX
+	public static class HttpGetAllowingBody
+			extends HttpEntityEnclosingRequestBase
+	{
+		
+		// CONSTANTS
+		public static final String METHOD_NAME = "GET";
+		
+		
+		// INIT
+		public HttpGetAllowingBody(String uri)
+		{
+			setURI(URI.create(uri));
+		}
+		
+		
+		// GETTERS
+		@Override
+		public String getMethod()
+		{
+			return METHOD_NAME;
 		}
 		
 	}

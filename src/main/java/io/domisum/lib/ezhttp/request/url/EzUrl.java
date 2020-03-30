@@ -125,6 +125,12 @@ public class EzUrl
 		return new EzUrl(protocol, host, port, path, newParameters);
 	}
 	
+	@API
+	public EzUrl withParameter(String key, String value)
+	{
+		return withParameters(new QueryParameter(key, value));
+	}
+	
 	
 	// OBJECT
 	@Override

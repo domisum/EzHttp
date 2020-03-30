@@ -188,12 +188,8 @@ public class EzHttpRequestEnvoy<T>
 		boolean successful = (statusCodeFirstDigit == 2) || (statusCodeFirstDigit == 3);
 		
 		var headers = readResponseHeaders(response);
-		T successResponseBody = successful ?
-				onSuccessReadResponseBody(response) :
-				null;
-		String failureResponseBody = successful ?
-				null :
-				onFailureReadResponseBody(response);
+		T successResponseBody = successful ? onSuccessReadResponseBody(response) : null;
+		String failureResponseBody = successful ? null : onFailureReadResponseBody(response);
 		
 		return new EzHttpResponse<>(statusCode, headers, successResponseBody, failureResponseBody);
 	}
@@ -209,6 +205,9 @@ public class EzHttpRequestEnvoy<T>
 	private T onSuccessReadResponseBody(HttpResponse response)
 			throws IOException
 	{
+		if(response.getEntity() == null)
+			return null;
+		
 		try(var responseBodyStream = response.getEntity().getContent())
 		{
 			return successResponseBodyReader.read(responseBodyStream);

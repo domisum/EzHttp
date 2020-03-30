@@ -158,10 +158,11 @@ public class EzUrl
 		if(port != null)
 			url += ":"+port;
 		
+		url += "/";
 		if(path != null)
 		{
 			String path = escaped ? escapePath(this.path) : this.path;
-			url += "/"+path;
+			url += path;
 		}
 		
 		if(queryParameters.size() > 0)

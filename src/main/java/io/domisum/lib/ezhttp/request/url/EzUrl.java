@@ -68,6 +68,18 @@ public class EzUrl
 		this.queryParameters = queryParameters == null ? Collections.emptyList() : List.copyOf(queryParameters);
 	}
 	
+	@API
+	public EzUrl(String protocol, String host, int port, String path)
+	{
+		this(protocol, host, port, path, null);
+	}
+	
+	@API
+	public EzUrl(String protocol, String host, String path)
+	{
+		this(protocol, host, null, path, null);
+	}
+	
 	private static String cleanPath(String path)
 	{
 		if(path == null)

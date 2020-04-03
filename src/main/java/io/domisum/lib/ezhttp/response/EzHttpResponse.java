@@ -50,20 +50,20 @@ public class EzHttpResponse<T>
 	
 	
 	@API
-	public T getSuccessBodyOrThrowHttpIoException()
-			throws IOException
+	public T getSuccessBodyOrThrowHttpException()
+			throws EzHttpException
 	{
-		ifFailedThrowHttpIoException();
+		ifFailedThrowHttpException();
 		return successBody;
 	}
 	
 	@API
-	public T getSuccessBodyOrThrowHttpIoException(Function<IOException,IOException> wrapper)
-			throws IOException
+	public <E extends IOException> T getSuccessBodyOrThrowHttpException(Function<IOException,E> wrapper)
+			throws E
 	{
 		try
 		{
-			return getSuccessBodyOrThrowHttpIoException();
+			return getSuccessBodyOrThrowHttpException();
 		}
 		catch(IOException e)
 		{
@@ -72,29 +72,29 @@ public class EzHttpResponse<T>
 	}
 	
 	@API
-	public T getSuccessBodyOrThrowHttpIoException(String wrappedMessage)
+	public T getSuccessBodyOrThrowHttpException(String wrappedMessage)
 			throws IOException
 	{
-		return getSuccessBodyOrThrowHttpIoException(e->new IOException(wrappedMessage, e));
+		return getSuccessBodyOrThrowHttpException(e->new IOException(wrappedMessage, e));
 	}
 	
 	
 	@API
-	public void ifFailedThrowHttpIoException()
-			throws IOException
+	public void ifFailedThrowHttpException()
+			throws EzHttpException
 	{
 		if(isSuccess())
 			return;
-		throw getFailureIoException();
+		throw getHttpException();
 	}
 	
 	@API
-	public void ifFailedThrowHttpIoException(String wrappedMessage)
+	public void ifFailedThrowHttpException(String wrappedMessage)
 			throws IOException
 	{
 		try
 		{
-			ifFailedThrowHttpIoException();
+			ifFailedThrowHttpException();
 		}
 		catch(IOException e)
 		{
@@ -103,11 +103,55 @@ public class EzHttpResponse<T>
 	}
 	
 	@API
-	public IOException getFailureIoException()
+	public EzHttpException getHttpException()
 	{
 		if(isSuccess())
 			throw new IllegalStateException("can't get failureIoException of successful response");
-		return new IOException("HTTP "+statusCode+", body:\n"+failureBody);
+		
+		return new EzHttpException(statusCode, failureBody);
+	}
+	
+	
+	// EXCEPTION
+	@API
+	public static class EzHttpException
+			extends IOException
+	{
+		
+		@Getter
+		private final int statusCode;
+		@Getter
+		private final String responseBody;
+		
+		
+		// INIT
+		protected EzHttpException(int statusCode, String responseBody)
+		{
+			super("HTTP "+statusCode+", body:\n"+responseBody);
+			this.statusCode = statusCode;
+			this.responseBody = responseBody;
+		}
+		
+		
+		// GETTERS
+		@API
+		public boolean isClientError()
+		{
+			return getStatusCodeHundreds() == 4;
+		}
+		
+		@API
+		public boolean isServerError()
+		{
+			return getStatusCodeHundreds() == 5;
+		}
+		
+		@API
+		public int getStatusCodeHundreds()
+		{
+			return statusCode/100;
+		}
+		
 	}
 	
 }

@@ -94,7 +94,7 @@ public class EzHttpRequestEnvoy<T>
 		}
 		catch(IOException e)
 		{
-			IOException exception = e;
+			var exception = e;
 			if(watchdogTask.wasInterrupted())
 				exception = new IoInterruptedException();
 			else if(watchdogTask.didTimeout())

@@ -199,6 +199,7 @@ public class EzHttpRequestEnvoy<T>
 		var headers = new ArrayList<EzHttpHeader>();
 		for(var header : response.getAllHeaders())
 			headers.add(new EzHttpHeader(header.getName(), header.getValue()));
+		
 		return headers;
 	}
 	

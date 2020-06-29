@@ -1,6 +1,6 @@
 package io.domisum.lib.ezhttp;
 
-import io.domisum.lib.auxiliumlib.util.DurationUtil;
+import io.domisum.lib.auxiliumlib.util.TimeUtil;
 import io.domisum.lib.auxiliumlib.util.thread.ThreadUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -108,7 +108,7 @@ final class EzHttpRequestWatchdog
 			}
 			
 			// timed out
-			if(DurationUtil.isOlderThan(start, duration))
+			if(TimeUtil.isOlderThan(start, duration))
 			{
 				request.abort();
 				status = RequestWatchdogTaskStatus.TIMED_OUT;

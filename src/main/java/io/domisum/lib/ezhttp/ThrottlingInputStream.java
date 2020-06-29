@@ -1,6 +1,6 @@
 package io.domisum.lib.ezhttp;
 
-import io.domisum.lib.auxiliumlib.util.DurationUtil;
+import io.domisum.lib.auxiliumlib.util.TimeUtil;
 import io.domisum.lib.auxiliumlib.util.thread.ThreadUtil;
 import lombok.RequiredArgsConstructor;
 
@@ -27,8 +27,8 @@ class ThrottlingInputStream
 	{
 		final int secondsPerMinute = 60;
 		
-		var age = DurationUtil.toNow(readStart);
-		double secondsSinceStart = DurationUtil.getMinutesDecimal(age)*secondsPerMinute;
+		var age = TimeUtil.toNow(readStart);
+		double secondsSinceStart = TimeUtil.getMinutesDecimal(age)*secondsPerMinute;
 		long totalBytesAvailable = Math.round(bytesPerSecond*secondsSinceStart);
 		return totalBytesAvailable;
 	}

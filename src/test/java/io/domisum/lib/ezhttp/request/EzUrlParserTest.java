@@ -64,7 +64,7 @@ public class EzUrlParserTest
 	@Test
 	public void testWrongPath()
 	{
-		// only way path can be wrong is already checked in EzUrlTest, parser cant' fail here
+		// only way path can be wrong is already checked in EzUrlTest, parser can't fail here
 	}
 	
 	@Test

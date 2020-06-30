@@ -6,7 +6,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.Validate;
 
 @API
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "key")
 public class EzHttpHeader
 {
 	

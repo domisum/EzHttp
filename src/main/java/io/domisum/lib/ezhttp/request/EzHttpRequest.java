@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @API
@@ -43,7 +44,7 @@ public class EzHttpRequest
 	}
 	
 	
-	// SETTERS
+	// MODIFICATION
 	@API
 	public void addHeader(CharSequence key, CharSequence value)
 	{
@@ -54,6 +55,12 @@ public class EzHttpRequest
 	public void addHeader(EzHttpHeader header)
 	{
 		headers.add(header);
+	}
+	
+	@API
+	public void addHeaders(Collection<EzHttpHeader> headers)
+	{
+		this.headers.addAll(headers);
 	}
 	
 }

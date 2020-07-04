@@ -39,12 +39,12 @@ class ThrottlingInputStream
 			readStart = Instant.now();
 		
 		long usable = getBytesUseLimit()-byteReadSlotsUsed;
-		if(usable>(3*bytesPerSecond)) // prevent accumulation of usable bytes by backlog
+		if(usable > (3*bytesPerSecond)) // prevent accumulation of usable bytes by backlog
 		{
 			byteReadSlotsUsed += bytesPerSecond;
 			usable -= bytesPerSecond;
 		}
-		if(usable<0)
+		if(usable < 0)
 			usable = 0;
 		
 		return (int) usable;
@@ -60,7 +60,7 @@ class ThrottlingInputStream
 		if(read == -1)
 			return -1;
 		
-		while(bytesUsable()<=0)
+		while(bytesUsable() <= 0)
 			ThreadUtil.sleep(10);
 		
 		byteReadSlotsUsed++;
@@ -73,7 +73,7 @@ class ThrottlingInputStream
 	{
 		int available = bytesUsable();
 		int backingAvailable = backingStream.available();
-		if(backingAvailable<available)
+		if(backingAvailable < available)
 			available = backingAvailable;
 		
 		return available;

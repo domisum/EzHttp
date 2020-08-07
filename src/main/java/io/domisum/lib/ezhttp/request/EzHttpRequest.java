@@ -35,6 +35,12 @@ public class EzHttpRequest
 		return new EzHttpRequest(EzHttpMethod.GET, url);
 	}
 	
+	@API
+	public static EzHttpRequest post(EzUrl url)
+	{
+		return new EzHttpRequest(EzHttpMethod.POST, url);
+	}
+	
 	
 	// GETTERS
 	@API

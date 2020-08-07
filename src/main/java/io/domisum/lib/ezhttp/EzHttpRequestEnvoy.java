@@ -3,6 +3,7 @@ package io.domisum.lib.ezhttp;
 import io.domisum.lib.auxiliumlib.annotations.API;
 import io.domisum.lib.auxiliumlib.display.DurationDisplay;
 import io.domisum.lib.auxiliumlib.exceptions.IncompleteCodeError;
+import io.domisum.lib.auxiliumlib.exceptions.ProgrammingError;
 import io.domisum.lib.ezhttp.header.EzHttpHeader;
 import io.domisum.lib.ezhttp.request.EzHttpRequest;
 import io.domisum.lib.ezhttp.response.EzHttpIoResponse;
@@ -25,13 +26,19 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +62,8 @@ public class EzHttpRequestEnvoy<T>
 	private Duration timeout = Duration.ofMinutes(1);
 	@Setter
 	private boolean followRedirects = true;
+	@Setter
+	private boolean ignoreSslErrors = false;
 	
 	private Double uploadSpeedCapMibitPerSecond = null;
 	
@@ -112,6 +121,18 @@ public class EzHttpRequestEnvoy<T>
 		clientBuilder.setDefaultRequestConfig(buildRequestConfig());
 		if(!followRedirects)
 			clientBuilder.disableRedirectHandling();
+		
+		if(ignoreSslErrors)
+			try
+			{
+				clientBuilder.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build());
+				clientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+			}
+			catch(NoSuchAlgorithmException|KeyManagementException|KeyStoreException e)
+			{
+				// should never happen
+				throw new ProgrammingError(e);
+			}
 		
 		return clientBuilder.build();
 	}

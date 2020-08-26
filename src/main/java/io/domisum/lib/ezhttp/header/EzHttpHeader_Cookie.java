@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.Map;
 
 @API
-public class EzHttpHeaderCookie
+public class EzHttpHeader_Cookie
 		extends EzHttpHeader
 {
 	
 	// INIT
 	@API
-	public EzHttpHeaderCookie(Map<String,String> cookies)
+	public EzHttpHeader_Cookie(Map<String,String> cookies)
 	{
 		super("Cookie", cookiesToValueString(cookies));
 	}
@@ -24,7 +24,8 @@ public class EzHttpHeaderCookie
 		for(var cookie : cookies.entrySet())
 			cookieKeyValuePairs.add(cookie.getKey()+"="+cookie.getValue());
 		
-		return StringUtil.listToString(cookieKeyValuePairs, "; ");
+		String asString = StringUtil.listToString(cookieKeyValuePairs, "; ");
+		return asString;
 	}
 	
 }

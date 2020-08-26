@@ -73,8 +73,8 @@ public class EzHttpRequestEnvoy<T>
 	public void setUploadSpeedCapMibitPerSecond(@Nullable Integer uploadSpeedCap)
 	{
 		Double uploadSpeedCapDouble = (uploadSpeedCap == null) ?
-				null :
-				uploadSpeedCap.doubleValue();
+			null :
+			uploadSpeedCap.doubleValue();
 		setUploadSpeedCapMibitPerSecond(uploadSpeedCapDouble);
 	}
 	
@@ -119,6 +119,8 @@ public class EzHttpRequestEnvoy<T>
 	{
 		var clientBuilder = HttpClients.custom();
 		clientBuilder.setDefaultRequestConfig(buildRequestConfig());
+		clientBuilder.disableCookieManagement();
+		
 		if(!followRedirects)
 			clientBuilder.disableRedirectHandling();
 		
@@ -141,9 +143,9 @@ public class EzHttpRequestEnvoy<T>
 	{
 		var requestConfigBuilder = RequestConfig.custom();
 		requestConfigBuilder
-				.setSocketTimeout((int) timeout.toMillis())
-				.setConnectTimeout((int) timeout.toMillis())
-				.setConnectionRequestTimeout((int) timeout.toMillis());
+			.setSocketTimeout((int) timeout.toMillis())
+			.setConnectTimeout((int) timeout.toMillis())
+			.setConnectionRequestTimeout((int) timeout.toMillis());
 		
 		return requestConfigBuilder.build();
 	}
@@ -167,14 +169,22 @@ public class EzHttpRequestEnvoy<T>
 		var url = request.getUrl().toStringEscaped();
 		switch(method)
 		{
-			case GET: return new HttpGetAllowingBody(url);
-			case HEAD: return new HttpHead(url);
-			case POST: return new HttpPost(url);
-			case PUT: return new HttpPut(url);
-			case DELETE: return new HttpDelete(url);
-			case OPTIONS: return new HttpOptions(url);
-			case PATCH: return new HttpPatch(url);
-			default: throw new IncompleteCodeError("no request defined for method "+method);
+			case GET:
+				return new HttpGetAllowingBody(url);
+			case HEAD:
+				return new HttpHead(url);
+			case POST:
+				return new HttpPost(url);
+			case PUT:
+				return new HttpPut(url);
+			case DELETE:
+				return new HttpDelete(url);
+			case OPTIONS:
+				return new HttpOptions(url);
+			case PATCH:
+				return new HttpPatch(url);
+			default:
+				throw new IncompleteCodeError("no request defined for method "+method);
 		}
 	}
 	
@@ -202,7 +212,7 @@ public class EzHttpRequestEnvoy<T>
 	
 	// READ RESPONSE
 	private EzHttpResponse<T> readResponse(HttpResponse response)
-			throws IOException
+		throws IOException
 	{
 		int statusCode = response.getStatusLine().getStatusCode();
 		int statusCodeFirstDigit = statusCode/100;
@@ -225,7 +235,7 @@ public class EzHttpRequestEnvoy<T>
 	}
 	
 	private T onSuccessReadResponseBody(HttpResponse response)
-			throws IOException
+		throws IOException
 	{
 		if(response.getEntity() == null)
 			return null;
@@ -237,7 +247,7 @@ public class EzHttpRequestEnvoy<T>
 	}
 	
 	private String onFailureReadResponseBody(HttpResponse response)
-			throws IOException
+		throws IOException
 	{
 		try(var responseBodyStream = response.getEntity().getContent())
 		{
@@ -249,7 +259,7 @@ public class EzHttpRequestEnvoy<T>
 	// ABORTION
 	@API
 	public static class IoTimeoutException
-			extends IOException
+		extends IOException
 	{
 		
 		// INIT
@@ -262,7 +272,7 @@ public class EzHttpRequestEnvoy<T>
 	
 	@API
 	public static class IoInterruptedException
-			extends IOException
+		extends IOException
 	{
 		
 		// INIT
@@ -275,8 +285,8 @@ public class EzHttpRequestEnvoy<T>
 	
 	
 	// APACHE FIX
-	public static class HttpGetAllowingBody
-			extends HttpEntityEnclosingRequestBase
+	private static class HttpGetAllowingBody
+		extends HttpEntityEnclosingRequestBase
 	{
 		
 		// CONSTANTS

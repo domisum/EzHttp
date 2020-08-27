@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp.response.bodyreaders;
 
 import io.domisum.lib.auxiliumlib.annotations.API;
-import io.domisum.lib.auxiliumlib.contracts.serialization.ToStringSerializer;
+import io.domisum.lib.auxiliumlib.contracts.serdes.StringSerdes;
 import io.domisum.lib.ezhttp.response.EzHttpResponseBodyReader;
 import lombok.RequiredArgsConstructor;
 
@@ -16,14 +16,14 @@ public class EzHttpSerializedObjectBodyReader<T>
 	
 	// DEPENDENCIES
 	private final EzHttpResponseBodyReader<String> stringReader;
-	private final ToStringSerializer<T> toStringSerializer;
+	private final StringSerdes<T> stringSerdes;
 	
 	
 	// INIT
 	@API
-	public EzHttpSerializedObjectBodyReader(ToStringSerializer<T> toStringSerializer)
+	public EzHttpSerializedObjectBodyReader(StringSerdes<T> stringSerdes)
 	{
-		this(new EzHttpStringBodyReader(), toStringSerializer);
+		this(new EzHttpStringBodyReader(), stringSerdes);
 	}
 	
 	
@@ -35,7 +35,7 @@ public class EzHttpSerializedObjectBodyReader<T>
 		String serialized = stringReader.read(inputStream);
 		try
 		{
-			T object = toStringSerializer.deserialize(serialized);
+			T object = stringSerdes.deserialize(serialized);
 			if(object == null)
 				throw new IOException("deserialized object was null (json input: "+serialized+")");
 			return object;

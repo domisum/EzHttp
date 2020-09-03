@@ -98,6 +98,13 @@ public class EzUrl
 	
 	// DERIVE
 	@API
+	public EzUrl withPort(Integer port)
+	{
+		var derived = new EzUrl(protocol, host, port, path, queryParameters);
+		return derived;
+	}
+	
+	@API
 	public EzUrl withExtendedPath(String pathExtension)
 	{
 		// TODO validate input

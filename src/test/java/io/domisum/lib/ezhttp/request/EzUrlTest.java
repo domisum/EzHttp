@@ -17,7 +17,7 @@ public class EzUrlTest
 	{
 		assertToStringEquals("http://www.google.com/", new EzUrl("http", "www.google.com", null, null, null));
 		assertToStringEquals("https://api.test.org:4388/path/asd_j?complex=true&color=purple",
-				new EzUrl("https", "api.test.org", 4388, "/path/asd_j/", qp("complex", "true", "color", "purple")));
+			new EzUrl("https", "api.test.org", 4388, "/path/asd_j/", qp("complex", "true", "color", "purple")));
 	}
 	
 	@Test

@@ -8,17 +8,17 @@ import java.util.Map;
 
 @API
 public class EzHttpHeader_Cookie
-		extends EzHttpHeader
+	extends EzHttpHeader
 {
 	
 	// INIT
 	@API
-	public EzHttpHeader_Cookie(Map<String,String> cookies)
+	public EzHttpHeader_Cookie(Map<String, String> cookies)
 	{
 		super("Cookie", cookiesToValueString(cookies));
 	}
 	
-	private static String cookiesToValueString(Map<String,String> cookies)
+	private static String cookiesToValueString(Map<String, String> cookies)
 	{
 		var cookieKeyValuePairs = new ArrayList<String>();
 		for(var cookie : cookies.entrySet())

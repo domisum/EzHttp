@@ -10,6 +10,6 @@ public interface EzHttpResponseBodyReader<T>
 {
 	
 	T read(InputStream inputStream)
-			throws IOException;
+		throws IOException;
 	
 }

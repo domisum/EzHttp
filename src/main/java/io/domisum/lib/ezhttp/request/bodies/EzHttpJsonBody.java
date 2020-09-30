@@ -6,7 +6,7 @@ import java.nio.charset.Charset;
 
 @API
 public class EzHttpJsonBody
-		extends EzHttpPlaintextBody
+	extends EzHttpPlaintextBody
 {
 	
 	// INIT

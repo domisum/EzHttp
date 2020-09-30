@@ -12,13 +12,13 @@ import java.io.InputStream;
 @API
 @RequiredArgsConstructor
 public class EzHttpImageBodyReader
-		implements EzHttpResponseBodyReader<BufferedImage>
+	implements EzHttpResponseBodyReader<BufferedImage>
 {
 	
 	// READ
 	@Override
 	public BufferedImage read(InputStream inputStream)
-			throws IOException
+		throws IOException
 	{
 		return ImageIO.read(inputStream);
 	}

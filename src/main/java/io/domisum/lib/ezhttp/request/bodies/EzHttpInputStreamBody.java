@@ -9,7 +9,7 @@ import java.io.InputStream;
 @API
 @RequiredArgsConstructor
 public class EzHttpInputStreamBody
-		implements EzHttpRequestBody
+	implements EzHttpRequestBody
 {
 	
 	private final InputStream inputStream;

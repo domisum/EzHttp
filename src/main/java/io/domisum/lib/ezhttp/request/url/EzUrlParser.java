@@ -75,7 +75,7 @@ public final class EzUrlParser
 		return protocol;
 	}
 	
-	private <T> T readComponent(String separatorBefore, Function<String,T> parse, char... separatorsAfter)
+	private <T> T readComponent(String separatorBefore, Function<String, T> parse, char... separatorsAfter)
 	{
 		if(separatorBefore != null)
 			if(!separatorBeforeRemainder.equals(separatorBefore))

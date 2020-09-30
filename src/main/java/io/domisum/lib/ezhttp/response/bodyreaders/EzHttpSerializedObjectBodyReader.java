@@ -11,7 +11,7 @@ import java.io.InputStream;
 @API
 @RequiredArgsConstructor
 public class EzHttpSerializedObjectBodyReader<T>
-		implements EzHttpResponseBodyReader<T>
+	implements EzHttpResponseBodyReader<T>
 {
 	
 	// DEPENDENCIES
@@ -30,7 +30,7 @@ public class EzHttpSerializedObjectBodyReader<T>
 	// READ
 	@Override
 	public T read(InputStream inputStream)
-			throws IOException
+		throws IOException
 	{
 		String serialized = stringReader.read(inputStream);
 		try

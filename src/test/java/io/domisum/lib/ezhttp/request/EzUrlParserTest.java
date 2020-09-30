@@ -19,11 +19,11 @@ public class EzUrlParserTest
 	public void testFull()
 	{
 		assertParseUnescapedEquals(new EzUrl("https", "build.domisum.io", 381, "ok/this/is/epic", EzUrlTest.qp("asdf", "nice", "noob", "okok1")),
-				"https://build.domisum.io:381/ok/this/is/epic?asdf=nice&noob=okok1");
+			"https://build.domisum.io:381/ok/this/is/epic?asdf=nice&noob=okok1");
 		assertParseUnescapedEquals(new EzUrl("ftp", "www.op.gg", 20901, "this/that", EzUrlTest.qp("j", "p", "jkl", "0391")),
-				"ftp://www.op.gg:20901/this/that?j=p&jkl=0391");
+			"ftp://www.op.gg:20901/this/that?j=p&jkl=0391");
 		assertParseUnescapedEquals(new EzUrl("http", "127.0.0.1", 80, "adv/antage", EzUrlTest.qp("build", "7", "filter", "none")),
-				"http://127.0.0.1:80/adv/antage?build=7&filter=none");
+			"http://127.0.0.1:80/adv/antage?build=7&filter=none");
 	}
 	
 	

@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 @API
 public class EzHttpMultipartFormBody
-		extends EzHttpPlaintextBody
+	extends EzHttpPlaintextBody
 {
 	
 	private final String delimiter;
@@ -15,13 +15,13 @@ public class EzHttpMultipartFormBody
 	
 	// INIT
 	@API
-	public EzHttpMultipartFormBody(Map<String,String> values)
+	public EzHttpMultipartFormBody(Map<String, String> values)
 	{
 		super(valueMapToBodyString(values));
 		delimiter = determineDelimiter(values);
 	}
 	
-	private static String determineDelimiter(Map<String,String> values)
+	private static String determineDelimiter(Map<String, String> values)
 	{
 		int delimiterAdditionalPartLength = 3;
 		while(true)
@@ -30,7 +30,7 @@ public class EzHttpMultipartFormBody
 			String randomDelimiterPart = "j".repeat(delimiterAdditionalPartLength);
 			String delimiter = "----WebKitFormBoundary"+randomDelimiterPart;
 			
-			for(Entry<String,String> entry : values.entrySet())
+			for(Entry<String, String> entry : values.entrySet())
 				if(!entry.getValue().contains(delimiter))
 					return delimiter;
 			
@@ -38,17 +38,17 @@ public class EzHttpMultipartFormBody
 		}
 	}
 	
-	private static String valueMapToBodyString(Map<String,String> values)
+	private static String valueMapToBodyString(Map<String, String> values)
 	{
 		return valueMapToBodyString(values, determineDelimiter(values));
 	}
 	
-	private static String valueMapToBodyString(Map<String,String> values, String delimiter)
+	private static String valueMapToBodyString(Map<String, String> values, String delimiter)
 	{
 		String delimiterLine = "--"+delimiter;
 		String asString = "";
 		
-		for(Entry<String,String> entry : values.entrySet())
+		for(Entry<String, String> entry : values.entrySet())
 		{
 			asString += delimiterLine+"\n";
 			asString += "Content-Disposition: form-data; name=\""+entry.getKey()+"\"\n";

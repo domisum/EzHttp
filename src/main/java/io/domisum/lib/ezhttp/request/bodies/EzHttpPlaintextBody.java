@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 @API
 @RequiredArgsConstructor
 public class EzHttpPlaintextBody
-		implements EzHttpRequestBody
+	implements EzHttpRequestBody
 {
 	
 	// CONSTANTS

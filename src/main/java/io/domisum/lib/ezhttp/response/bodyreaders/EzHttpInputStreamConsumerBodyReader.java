@@ -11,7 +11,7 @@ import java.io.InputStream;
 @API
 @RequiredArgsConstructor
 public class EzHttpInputStreamConsumerBodyReader
-		implements EzHttpResponseBodyReader<Void>
+	implements EzHttpResponseBodyReader<Void>
 {
 	
 	// INPUT
@@ -21,7 +21,7 @@ public class EzHttpInputStreamConsumerBodyReader
 	// READ
 	@Override
 	public Void read(InputStream inputStream)
-			throws IOException
+		throws IOException
 	{
 		inputStreamAction.accept(inputStream);
 		return null;

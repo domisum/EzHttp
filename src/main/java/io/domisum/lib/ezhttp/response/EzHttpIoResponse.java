@@ -7,7 +7,7 @@ import java.io.IOException;
 
 @API
 public class EzHttpIoResponse<T>
-		extends IoOptional<EzHttpResponse<T>>
+	extends IoOptional<EzHttpResponse<T>>
 {
 	
 	// INIT

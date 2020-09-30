@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp;
 
-import io.domisum.lib.auxiliumlib.util.TimeUtil;
 import io.domisum.lib.auxiliumlib.util.ThreadUtil;
+import io.domisum.lib.auxiliumlib.util.TimeUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +26,8 @@ final class EzHttpRequestWatchdog
 	static RequestWatchdogTask watch(HttpUriRequest request, Duration timeoutDuration, boolean cancelOnInterrupt)
 	{
 		var requestThread = cancelOnInterrupt ?
-				Thread.currentThread() :
-				null;
+			Thread.currentThread() :
+			null;
 		
 		var requestTimeoutTask = new RequestWatchdogTask(request, requestThread, timeoutDuration);
 		watchdogTasks.add(requestTimeoutTask);

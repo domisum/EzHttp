@@ -12,13 +12,13 @@ import java.io.InputStream;
 @API
 @RequiredArgsConstructor
 public class EzHttpWriteToTempFileBodyReader
-		implements EzHttpResponseBodyReader<File>
+	implements EzHttpResponseBodyReader<File>
 {
 	
 	// READ
 	@Override
 	public File read(InputStream inputStream)
-			throws IOException
+		throws IOException
 	{
 		File file = FileUtil.createTemporaryFile();
 		try

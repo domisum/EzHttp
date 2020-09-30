@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp;
 
-import io.domisum.lib.auxiliumlib.util.TimeUtil;
 import io.domisum.lib.auxiliumlib.util.ThreadUtil;
+import io.domisum.lib.auxiliumlib.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.time.Instant;
 
 @RequiredArgsConstructor
 class ThrottlingInputStream
-		extends InputStream
+	extends InputStream
 {
 	
 	// INPUT
@@ -54,7 +54,7 @@ class ThrottlingInputStream
 	// INPUT STREAM
 	@Override
 	public int read()
-			throws IOException
+		throws IOException
 	{
 		var read = backingStream.read();
 		if(read == -1)
@@ -69,7 +69,7 @@ class ThrottlingInputStream
 	
 	@Override
 	public synchronized int available()
-			throws IOException
+		throws IOException
 	{
 		int available = bytesUsable();
 		int backingAvailable = backingStream.available();
@@ -81,7 +81,7 @@ class ThrottlingInputStream
 	
 	@Override
 	public void close()
-			throws IOException
+		throws IOException
 	{
 		backingStream.close();
 	}

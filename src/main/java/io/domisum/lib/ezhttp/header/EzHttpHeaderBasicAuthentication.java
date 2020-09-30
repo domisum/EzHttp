@@ -6,7 +6,7 @@ import java.util.Base64;
 
 @API
 public class EzHttpHeaderBasicAuthentication
-		extends EzHttpHeader
+	extends EzHttpHeader
 {
 	
 	// INIT

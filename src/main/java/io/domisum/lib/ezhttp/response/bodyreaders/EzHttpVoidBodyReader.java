@@ -9,7 +9,7 @@ import java.io.InputStream;
 @API
 @RequiredArgsConstructor
 public class EzHttpVoidBodyReader
-		implements EzHttpResponseBodyReader<Void>
+	implements EzHttpResponseBodyReader<Void>
 {
 	
 	// READ

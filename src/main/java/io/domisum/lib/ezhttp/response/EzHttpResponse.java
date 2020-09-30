@@ -51,15 +51,15 @@ public class EzHttpResponse<T>
 	
 	@API
 	public T getSuccessBodyOrThrowHttpException()
-			throws EzHttpException
+		throws EzHttpException
 	{
 		ifFailedThrowHttpException();
 		return successBody;
 	}
 	
 	@API
-	public <E extends IOException> T getSuccessBodyOrThrowHttpException(Function<IOException,E> wrapper)
-			throws E
+	public <E extends IOException> T getSuccessBodyOrThrowHttpException(Function<IOException, E> wrapper)
+		throws E
 	{
 		try
 		{
@@ -73,7 +73,7 @@ public class EzHttpResponse<T>
 	
 	@API
 	public T getSuccessBodyOrThrowHttpException(String wrappedMessage)
-			throws IOException
+		throws IOException
 	{
 		return getSuccessBodyOrThrowHttpException(e->new IOException(wrappedMessage, e));
 	}
@@ -81,7 +81,7 @@ public class EzHttpResponse<T>
 	
 	@API
 	public void ifFailedThrowHttpException()
-			throws EzHttpException
+		throws EzHttpException
 	{
 		if(isSuccess())
 			return;
@@ -90,7 +90,7 @@ public class EzHttpResponse<T>
 	
 	@API
 	public void ifFailedThrowHttpException(String wrappedMessage)
-			throws IOException
+		throws IOException
 	{
 		try
 		{
@@ -115,7 +115,7 @@ public class EzHttpResponse<T>
 	// EXCEPTION
 	@API
 	public static class EzHttpException
-			extends IOException
+		extends IOException
 	{
 		
 		@Getter

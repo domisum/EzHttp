@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 @API
 @RequiredArgsConstructor
 public class EzHttpStringBodyReader
-		implements EzHttpResponseBodyReader<String>
+	implements EzHttpResponseBodyReader<String>
 {
 	
 	// CONSTANTS
@@ -35,7 +35,7 @@ public class EzHttpStringBodyReader
 	// READ
 	@Override
 	public String read(InputStream inputStream)
-			throws IOException
+		throws IOException
 	{
 		return IOUtils.toString(inputStream, charset);
 	}

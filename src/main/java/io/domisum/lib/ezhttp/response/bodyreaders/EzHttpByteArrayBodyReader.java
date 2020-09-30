@@ -11,13 +11,13 @@ import java.io.InputStream;
 @API
 @RequiredArgsConstructor
 public class EzHttpByteArrayBodyReader
-		implements EzHttpResponseBodyReader<byte[]>
+	implements EzHttpResponseBodyReader<byte[]>
 {
 	
 	// READ
 	@Override
 	public byte[] read(InputStream inputStream)
-			throws IOException
+		throws IOException
 	{
 		return IOUtils.toByteArray(inputStream);
 	}

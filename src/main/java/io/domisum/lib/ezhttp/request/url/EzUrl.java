@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp.request.url;
 
 import io.domisum.lib.auxiliumlib.annotations.API;
-import io.domisum.lib.auxiliumlib.util.StringUtil;
+import io.domisum.lib.auxiliumlib.util.StringListUtil;
 import io.domisum.lib.auxiliumlib.util.ValidationUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -181,7 +181,7 @@ public class EzUrl
 				queryParameterStrings.add(queryParameterString);
 			}
 			
-			String queryString = StringUtil.listToString(queryParameterStrings, "&");
+			String queryString = StringListUtil.listHorizontally(queryParameterStrings, "&");
 			url += "?"+queryString;
 		}
 		
@@ -289,7 +289,7 @@ public class EzUrl
 		for(String segment : path.split("/"))
 			escapedSegments.add(escapeString(segment));
 		
-		return StringUtil.listToString(escapedSegments, "/");
+		return StringListUtil.listHorizontally(escapedSegments, "/");
 	}
 	
 	@API
@@ -299,7 +299,7 @@ public class EzUrl
 		for(String segment : escapedPath.split("/"))
 			unescapedSegments.add(unescapeString(segment));
 		
-		return StringUtil.listToString(unescapedSegments, "/");
+		return StringListUtil.listHorizontally(unescapedSegments, "/");
 	}
 	
 }

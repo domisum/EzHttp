@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp.header;
 
 import io.domisum.lib.auxiliumlib.annotations.API;
-import io.domisum.lib.auxiliumlib.util.StringUtil;
+import io.domisum.lib.auxiliumlib.util.StringListUtil;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class EzHttpHeader_Cookie
 		for(var cookie : cookies.entrySet())
 			cookieKeyValuePairs.add(cookie.getKey()+"="+cookie.getValue());
 		
-		String asString = StringUtil.listToString(cookieKeyValuePairs, "; ");
+		String asString = StringListUtil.listHorizontally(cookieKeyValuePairs, "; ");
 		return asString;
 	}
 	

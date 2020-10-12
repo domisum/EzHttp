@@ -2,7 +2,7 @@ package io.domisum.lib.ezhttp.request.bodies;
 
 import io.domisum.lib.auxiliumlib.annotations.API;
 import io.domisum.lib.auxiliumlib.datacontainers.tuple.Duo;
-import io.domisum.lib.auxiliumlib.util.StringUtil;
+import io.domisum.lib.auxiliumlib.util.StringListUtil;
 import io.domisum.lib.ezhttp.request.url.EzUrl;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class EzHttpFormUrlEncodedBody
 			keyValuePairs.add(keyValuePair);
 		}
 		
-		return StringUtil.listToString(keyValuePairs, "&");
+		return StringListUtil.listHorizontally(keyValuePairs, "&");
 	}
 	
 	

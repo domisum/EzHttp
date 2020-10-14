@@ -10,6 +10,7 @@ import io.domisum.lib.ezhttp.response.EzHttpIoResponse;
 import io.domisum.lib.ezhttp.response.EzHttpResponse;
 import io.domisum.lib.ezhttp.response.EzHttpResponseBodyReader;
 import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpStringBodyReader;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.Validate;
@@ -27,6 +28,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -34,6 +36,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 
 import javax.annotation.Nullable;
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.URI;
 import java.security.KeyManagementException;
@@ -56,14 +59,17 @@ public class EzHttpRequestEnvoy<T>
 	private final EzHttpResponseBodyReader<T> successResponseBodyReader;
 	
 	// ADDTITIONAL SETTINGS
-	@Setter
+	@Getter @Setter
 	private boolean cancelOnInterrupt = true;
-	@Setter
+	@Getter @Setter
 	private Duration timeout = Duration.ofMinutes(1);
-	@Setter
+	@Getter @Setter
 	private boolean followRedirects = true;
-	@Setter
-	private boolean ignoreSslErrors = false;
+	
+	@Getter @Setter
+	private boolean ignoreSslCertificateUntrusted = false;
+	@Getter @Setter
+	private List<String> sslProtocols = null; // null -> auto
 	
 	private Double uploadSpeedCapMibitPerSecond = null;
 	
@@ -124,17 +130,28 @@ public class EzHttpRequestEnvoy<T>
 		if(!followRedirects)
 			clientBuilder.disableRedirectHandling();
 		
-		if(ignoreSslErrors)
-			try
+		try
+		{
+			var sslContext = SSLContext.getDefault();
+			var sslHostnameVerifier = SSLConnectionSocketFactory.getDefaultHostnameVerifier();
+			
+			if(ignoreSslCertificateUntrusted)
 			{
-				clientBuilder.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build());
-				clientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+				sslContext = new SSLContextBuilder()
+					.loadTrustMaterial(null, TrustAllStrategy.INSTANCE)
+					.build();
+				sslHostnameVerifier = NoopHostnameVerifier.INSTANCE;
 			}
-			catch(NoSuchAlgorithmException|KeyManagementException|KeyStoreException e)
-			{
-				// should never happen
-				throw new ProgrammingError(e);
-			}
+			
+			String[] sslProtocolsArray = sslProtocols == null ? null : sslProtocols.toArray(new String[0]);
+			var sslSocketFactory = new SSLConnectionSocketFactory(sslContext, sslProtocolsArray, null, sslHostnameVerifier);
+			clientBuilder.setSSLSocketFactory(sslSocketFactory);
+		}
+		catch(NoSuchAlgorithmException|KeyStoreException|KeyManagementException e)
+		{
+			// should never happen
+			throw new ProgrammingError(e);
+		}
 		
 		return clientBuilder.build();
 	}

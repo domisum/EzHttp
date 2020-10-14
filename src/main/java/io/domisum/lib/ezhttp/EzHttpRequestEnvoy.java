@@ -44,6 +44,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @API
@@ -68,13 +69,19 @@ public class EzHttpRequestEnvoy<T>
 	
 	@Getter @Setter
 	private boolean ignoreSslCertificateUntrusted = false;
-	@Getter @Setter
+	@Getter
 	private List<String> sslProtocols = null; // null -> auto
 	
 	private Double uploadSpeedCapMibitPerSecond = null;
 	
 	
 	// SETTERS
+	@API
+	public void setSslProtocols(String... sslProtocols)
+	{
+		this.sslProtocols = Arrays.asList(sslProtocols);
+	}
+	
 	@API
 	public void setUploadSpeedCapMibitPerSecond(@Nullable Integer uploadSpeedCap)
 	{

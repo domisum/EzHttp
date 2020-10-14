@@ -71,6 +71,8 @@ public class EzHttpRequestEnvoy<T>
 	private boolean ignoreSslCertificateUntrusted = false;
 	@Getter
 	private List<String> sslProtocols = null; // null -> auto
+	@Getter
+	private List<String> sslCiphers = null; // null -> auto
 	
 	private Double uploadSpeedCapMibitPerSecond = null;
 	
@@ -80,6 +82,12 @@ public class EzHttpRequestEnvoy<T>
 	public void setSslProtocols(String... sslProtocols)
 	{
 		this.sslProtocols = Arrays.asList(sslProtocols);
+	}
+	
+	@API
+	public void setSslCiphers(String... sslCiphers)
+	{
+		this.sslCiphers = Arrays.asList(sslCiphers);
 	}
 	
 	@API
@@ -151,7 +159,8 @@ public class EzHttpRequestEnvoy<T>
 			}
 			
 			String[] sslProtocolsArray = sslProtocols == null ? null : sslProtocols.toArray(new String[0]);
-			var sslSocketFactory = new SSLConnectionSocketFactory(sslContext, sslProtocolsArray, null, sslHostnameVerifier);
+			String[] sslCiphersArray = sslCiphers == null ? null : sslCiphers.toArray(new String[0]);
+			var sslSocketFactory = new SSLConnectionSocketFactory(sslContext, sslProtocolsArray, sslCiphersArray, sslHostnameVerifier);
 			clientBuilder.setSSLSocketFactory(sslSocketFactory);
 		}
 		catch(NoSuchAlgorithmException|KeyStoreException|KeyManagementException e)

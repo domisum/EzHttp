@@ -53,7 +53,7 @@ class ThrottlingInputStream
 	
 	// INPUT STREAM
 	@Override
-	public int read()
+	public synchronized int read()
 		throws IOException
 	{
 		var read = backingStream.read();
@@ -80,7 +80,7 @@ class ThrottlingInputStream
 	}
 	
 	@Override
-	public void close()
+	public synchronized void close()
 		throws IOException
 	{
 		backingStream.close();

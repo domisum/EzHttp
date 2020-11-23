@@ -15,6 +15,7 @@ import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpVoidBodyReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @API
 public class TurboEz
@@ -26,6 +27,9 @@ public class TurboEz
 	// MALLEABLE
 	private EzUrl url;
 	private final List<EzHttpHeader> headers = new ArrayList<>();
+	
+	// CONFIGURE
+	private final List<Consumer<EzHttpRequestEnvoy<?>>> envoyConfigurators = new ArrayList<>();
 	
 	
 	// INIT
@@ -42,7 +46,6 @@ public class TurboEz
 	}
 	
 	
-	// SETUP
 	@API
 	public TurboEz addParam(String key, String value)
 	{
@@ -52,15 +55,26 @@ public class TurboEz
 	
 	
 	@API
-	public void addHeader(CharSequence key, CharSequence value)
+	public TurboEz addHeader(CharSequence key, CharSequence value)
 	{
 		addHeader(new EzHttpHeader(key, value));
+		return this;
 	}
 	
 	@API
-	public void addHeader(EzHttpHeader header)
+	public TurboEz addHeader(EzHttpHeader header)
 	{
 		headers.add(header);
+		return this;
+	}
+	
+	
+	// CONFIGURATION
+	@API
+	public TurboEz configureEnvoy(Consumer<EzHttpRequestEnvoy<?>> configure)
+	{
+		envoyConfigurators.add(configure);
+		return this;
 	}
 	
 	
@@ -72,6 +86,7 @@ public class TurboEz
 		var request = buildRequest();
 		request.setBody(body);
 		var envoy = new EzHttpRequestEnvoy<>(request, new EzHttpVoidBodyReader());
+		configureEnvoy(envoy);
 		
 		var ioResponse = envoy.send();
 		
@@ -93,6 +108,7 @@ public class TurboEz
 	{
 		var request = buildRequest();
 		var envoy = new EzHttpRequestEnvoy<>(request, responseBodyReader);
+		configureEnvoy(envoy);
 		
 		var ioResponse = envoy.send();
 		
@@ -115,6 +131,12 @@ public class TurboEz
 		var request = new EzHttpRequest(method, url);
 		request.addHeaders(headers);
 		return request;
+	}
+	
+	private void configureEnvoy(EzHttpRequestEnvoy<?> envoy)
+	{
+		for(var envoyConfigurator : envoyConfigurators)
+			envoyConfigurator.accept(envoy);
 	}
 	
 	private String getErrorMessage(String verb)

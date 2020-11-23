@@ -106,7 +106,7 @@ public class EzHttpResponse<T>
 	public EzHttpException getHttpException()
 	{
 		if(isSuccess())
-			throw new IllegalStateException("can't get failureIoException of successful response");
+			throw new IllegalStateException("Can't get failureIoException of successful response");
 		
 		return new EzHttpException(statusCode, failureBody);
 	}

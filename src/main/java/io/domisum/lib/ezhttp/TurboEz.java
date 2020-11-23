@@ -6,13 +6,14 @@ import io.domisum.lib.auxiliumlib.contracts.serdes.StringSerdes;
 import io.domisum.lib.ezhttp.header.EzHttpHeader;
 import io.domisum.lib.ezhttp.request.EzHttpMethod;
 import io.domisum.lib.ezhttp.request.EzHttpRequest;
+import io.domisum.lib.ezhttp.request.EzHttpRequestBody;
 import io.domisum.lib.ezhttp.request.url.EzUrl;
 import io.domisum.lib.ezhttp.response.EzHttpResponseBodyReader;
 import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpSerializedObjectBodyReader;
+import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpVoidBodyReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @API
@@ -62,20 +63,35 @@ public class TurboEz
 		headers.add(header);
 	}
 	
-	@API
-	public void addHeaders(Collection<EzHttpHeader> headers)
-	{
-		this.headers.addAll(headers);
-	}
-	
 	
 	// SEND
+	@API
+	public void send(EzHttpRequestBody body)
+		throws IOException
+	{
+		var request = buildRequest();
+		request.setBody(body);
+		var envoy = new EzHttpRequestEnvoy<>(request, new EzHttpVoidBodyReader());
+		
+		var ioResponse = envoy.send();
+		
+		String errorMessage = getErrorMessage("send");
+		var response = ioResponse.getOrThrowWrapped(errorMessage);
+		response.ifFailedThrowHttpException(errorMessage);
+	}
+	
+	@API
+	public void send()
+		throws IOException
+	{
+		send(null);
+	}
+	
 	@API
 	public <T> T receive(EzHttpResponseBodyReader<T> responseBodyReader)
 		throws IOException
 	{
-		var request = new EzHttpRequest(method, url);
-		request.addHeaders(headers);
+		var request = buildRequest();
 		var envoy = new EzHttpRequestEnvoy<>(request, responseBodyReader);
 		
 		var ioResponse = envoy.send();
@@ -94,6 +110,13 @@ public class TurboEz
 	
 	
 	// UTIL
+	private EzHttpRequest buildRequest()
+	{
+		var request = new EzHttpRequest(method, url);
+		request.addHeaders(headers);
+		return request;
+	}
+	
 	private String getErrorMessage(String verb)
 	{
 		return PHR.r("Failed to {}: {} {}", verb, method, url);

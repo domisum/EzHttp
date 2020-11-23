@@ -10,6 +10,7 @@ import io.domisum.lib.ezhttp.request.EzHttpRequestBody;
 import io.domisum.lib.ezhttp.request.url.EzUrl;
 import io.domisum.lib.ezhttp.response.EzHttpResponseBodyReader;
 import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpSerializedObjectBodyReader;
+import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpStringBodyReader;
 import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpVoidBodyReader;
 
 import java.io.IOException;
@@ -27,15 +28,20 @@ public class TurboEz
 	// MALLEABLE
 	private EzUrl url;
 	private final List<EzHttpHeader> headers = new ArrayList<>();
-	
-	// CONFIGURE
-	private final List<Consumer<EzHttpRequestEnvoy<?>>> envoyConfigurators = new ArrayList<>();
+	private final List<Consumer<EzHttpRequestEnvoy<?>>> configures = new ArrayList<>();
 	
 	
 	// INIT
+	@API
 	public static TurboEz get(EzUrl url)
 	{
 		return new TurboEz(EzHttpMethod.GET, url);
+	}
+	
+	@API
+	public static TurboEz post(EzUrl url)
+	{
+		return new TurboEz(EzHttpMethod.POST, url);
 	}
 	
 	@API
@@ -68,12 +74,21 @@ public class TurboEz
 		return this;
 	}
 	
+	@API
+	public TurboEz addHeaders(Iterable<EzHttpHeader> headers)
+	{
+		for(var header : headers)
+			addHeader(header);
+		
+		return this;
+	}
+	
 	
 	// CONFIGURATION
 	@API
-	public TurboEz configureEnvoy(Consumer<EzHttpRequestEnvoy<?>> configure)
+	public TurboEz configure(Consumer<EzHttpRequestEnvoy<?>> configure)
 	{
-		envoyConfigurators.add(configure);
+		configures.add(configure);
 		return this;
 	}
 	
@@ -86,7 +101,7 @@ public class TurboEz
 		var request = buildRequest();
 		request.setBody(body);
 		var envoy = new EzHttpRequestEnvoy<>(request, new EzHttpVoidBodyReader());
-		configureEnvoy(envoy);
+		configure(envoy);
 		
 		var ioResponse = envoy.send();
 		
@@ -108,7 +123,7 @@ public class TurboEz
 	{
 		var request = buildRequest();
 		var envoy = new EzHttpRequestEnvoy<>(request, responseBodyReader);
-		configureEnvoy(envoy);
+		configure(envoy);
 		
 		var ioResponse = envoy.send();
 		
@@ -124,6 +139,13 @@ public class TurboEz
 		return receive(new EzHttpSerializedObjectBodyReader<>(stringSerdes));
 	}
 	
+	@API
+	public String receiveString()
+		throws IOException
+	{
+		return receive(new EzHttpStringBodyReader());
+	}
+	
 	
 	// UTIL
 	private EzHttpRequest buildRequest()
@@ -133,9 +155,9 @@ public class TurboEz
 		return request;
 	}
 	
-	private void configureEnvoy(EzHttpRequestEnvoy<?> envoy)
+	private void configure(EzHttpRequestEnvoy<?> envoy)
 	{
-		for(var envoyConfigurator : envoyConfigurators)
+		for(var envoyConfigurator : configures)
 			envoyConfigurator.accept(envoy);
 	}
 	

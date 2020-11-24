@@ -187,11 +187,6 @@ public final class EzUrlParser
 		return queryParameters;
 	}
 	
-	private String parseFragment(String fragment)
-	{
-		return fragment;
-	}
-	
 	
 	// UTIL
 	private IllegalArgumentException parseFail(String message)

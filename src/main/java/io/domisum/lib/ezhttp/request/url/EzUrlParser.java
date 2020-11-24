@@ -43,7 +43,7 @@ public final class EzUrlParser
 	private EzUrl parse()
 	{
 		if(url.contains("#"))
-			throw parseFail("fragments are not supported");
+			throw parseFail("Fragments are not supported");
 		
 		remainder = url;
 		String protocol = readProtocol();
@@ -61,11 +61,11 @@ public final class EzUrlParser
 		
 		var splitAfterProtocol = StringUtil.split(remainder, separator);
 		if(splitAfterProtocol.size() == 0)
-			throw parseFail("url has to contain protocol");
+			throw parseFail("Url has to contain protocol");
 		if(splitAfterProtocol.size() == 1)
-			throw parseFail("url has to contain a protocol and a remaining part");
+			throw parseFail("Url has to contain a protocol and a remaining part");
 		if(splitAfterProtocol.size() > 2)
-			throw parseFail("url contains too many protocol separators");
+			throw parseFail("Url contains too many protocol separators");
 		
 		String protocol = splitAfterProtocol.get(0);
 		
@@ -126,7 +126,7 @@ public final class EzUrlParser
 	private String parseHost(String host)
 	{
 		if("".equals(host))
-			throw parseFail("host can't be blank");
+			throw parseFail("Host can't be blank");
 		
 		return host;
 	}
@@ -139,7 +139,7 @@ public final class EzUrlParser
 		}
 		catch(NumberFormatException ignored)
 		{
-			throw parseFail("invalid port: '"+portString+"'");
+			throw parseFail("Invalid port: '"+portString+"'");
 		}
 	}
 	
@@ -154,26 +154,26 @@ public final class EzUrlParser
 	private List<QueryParameter> parseQueryParameters(String queryString)
 	{
 		if(queryString.isEmpty())
-			throw parseFail("query string can't be empty");
+			throw parseFail("Query string can't be empty");
 		
 		var parametersAsString = StringUtil.split(queryString, "&");
 		var queryParameters = new ArrayList<QueryParameter>();
 		for(String parameter : parametersAsString)
 		{
 			if(parameter.isEmpty())
-				throw parseFail("parameter in query string can't be empty");
+				throw parseFail("Parameter in query string can't be empty");
 			
 			var parameterSplit = StringUtil.split(parameter, "=");
 			if(parameterSplit.size() != 2)
-				throw parseFail("parameter in query string does not follow key=value schema: '"+parameter+"'");
+				throw parseFail("Parameter in query string does not follow key=value schema: '"+parameter+"'");
 			
 			String key = parameterSplit.get(0);
 			String value = parameterSplit.get(1);
 			
 			if(key.isEmpty())
-				throw parseFail("parameter key in query string can't be empty");
+				throw parseFail("Parameter key in query string can't be empty");
 			if(value.isEmpty())
-				throw parseFail("parameter value in query string can't be empty");
+				throw parseFail("Parameter value in query string can't be empty");
 			
 			if(escaped)
 			{

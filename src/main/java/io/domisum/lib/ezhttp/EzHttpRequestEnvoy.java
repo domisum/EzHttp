@@ -94,8 +94,7 @@ public class EzHttpRequestEnvoy<T>
 	public void setUploadSpeedCapMibitPerSecond(@Nullable Integer uploadSpeedCap)
 	{
 		Double uploadSpeedCapDouble = (uploadSpeedCap == null) ?
-			null :
-			uploadSpeedCap.doubleValue();
+			null : uploadSpeedCap.doubleValue();
 		setUploadSpeedCapMibitPerSecond(uploadSpeedCapDouble);
 	}
 	
@@ -165,7 +164,6 @@ public class EzHttpRequestEnvoy<T>
 		}
 		catch(NoSuchAlgorithmException|KeyStoreException|KeyManagementException e)
 		{
-			// should never happen
 			throw new ProgrammingError(e);
 		}
 		

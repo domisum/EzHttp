@@ -24,8 +24,7 @@ public class EzHttpHeader_Cookie
 		for(var cookie : cookies.entrySet())
 			cookieKeyValuePairs.add(cookie.getKey()+"="+cookie.getValue());
 		
-		String asString = StringListUtil.listHorizontally(cookieKeyValuePairs, "; ");
-		return asString;
+		return StringListUtil.listHorizontally(cookieKeyValuePairs, "; ");
 	}
 	
 }

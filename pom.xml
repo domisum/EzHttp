@@ -34,23 +34,23 @@
 			<version>4.5.13</version>
 		</dependency>
 
-		<dependency>
+		<dependency> <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
 			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.6.1</version>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.7.0</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+		<dependency> <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>1.3.0-alpha5</version>
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
+		<dependency> <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.12</version>
+			<version>1.18.16</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

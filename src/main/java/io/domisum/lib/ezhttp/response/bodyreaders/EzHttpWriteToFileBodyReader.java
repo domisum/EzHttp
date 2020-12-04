@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp.response.bodyreaders;
 
 import io.domisum.lib.auxiliumlib.annotations.API;
-import io.domisum.lib.auxiliumlib.util.file.FileUtil;
+import io.domisum.lib.auxiliumlib.util.FileUtil;
 import io.domisum.lib.ezhttp.response.EzHttpResponseBodyReader;
 import lombok.RequiredArgsConstructor;
 

@@ -13,6 +13,7 @@ import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpSerializedObjectBodyRead
 import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpStringBodyReader;
 import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpVoidBodyReader;
 import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpWriteToFileBodyReader;
+import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpWriteToTempFileBodyReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -153,6 +154,13 @@ public class TurboEz
 		throws IOException
 	{
 		receive(new EzHttpWriteToFileBodyReader(file));
+	}
+	
+	@API
+	public File receiveToTempFile()
+		throws IOException
+	{
+		return receive(new EzHttpWriteToTempFileBodyReader());
 	}
 	
 	

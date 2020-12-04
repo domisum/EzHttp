@@ -20,7 +20,7 @@ public class EzHttpWriteToTempFileBodyReader
 	public File read(InputStream inputStream)
 		throws IOException
 	{
-		File file = FileUtil.createTemporaryFile();
+		var file = FileUtil.createTemporaryFile();
 		try
 		{
 			FileUtil.writeStreamUncaught(file, inputStream);

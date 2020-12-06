@@ -49,7 +49,7 @@ public class EzHttpFormUrlEncodedBody
 			keyValuePairs.add(keyValuePair);
 		}
 		
-		return StringListUtil.listHorizontally(keyValuePairs, "&");
+		return StringListUtil.list(keyValuePairs, "&");
 	}
 	
 	

@@ -181,7 +181,7 @@ public class EzUrl
 				queryParameterStrings.add(queryParameterString);
 			}
 			
-			String queryString = StringListUtil.listHorizontally(queryParameterStrings, "&");
+			String queryString = StringListUtil.list(queryParameterStrings, "&");
 			url += "?"+queryString;
 		}
 		
@@ -289,7 +289,7 @@ public class EzUrl
 		for(String segment : path.split("/"))
 			escapedSegments.add(escapeString(segment));
 		
-		return StringListUtil.listHorizontally(escapedSegments, "/");
+		return StringListUtil.list(escapedSegments, "/");
 	}
 	
 	@API
@@ -299,7 +299,7 @@ public class EzUrl
 		for(String segment : escapedPath.split("/"))
 			unescapedSegments.add(unescapeString(segment));
 		
-		return StringListUtil.listHorizontally(unescapedSegments, "/");
+		return StringListUtil.list(unescapedSegments, "/");
 	}
 	
 }

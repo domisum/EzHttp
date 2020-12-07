@@ -124,15 +124,7 @@ public class TurboEz
 	public <T> T receive(EzHttpResponseBodyReader<T> responseBodyReader)
 		throws IOException
 	{
-		var request = buildRequest();
-		var envoy = new EzHttpRequestEnvoy<>(request, responseBodyReader);
-		configure(envoy);
-		
-		var ioResponse = envoy.send();
-		
-		String errorMessage = getErrorMessage("receive");
-		var response = ioResponse.getOrThrowWrapped(errorMessage);
-		return response.getSuccessBodyOrThrowHttpException(errorMessage);
+		return sendAndReceive(null, responseBodyReader);
 	}
 	
 	@API
@@ -143,10 +135,36 @@ public class TurboEz
 	}
 	
 	@API
+	public <T> T sendAndReceive(EzHttpRequestBody body, EzHttpResponseBodyReader<T> responseBodyReader)
+		throws IOException
+	{
+		var request = buildRequest();
+		if(body != null)
+			request.setBody(body);
+		var envoy = new EzHttpRequestEnvoy<>(request, responseBodyReader);
+		configure(envoy);
+		
+		var ioResponse = envoy.send();
+		
+		String errorMessage = getErrorMessage("receive");
+		var response = ioResponse.getOrThrowWrapped(errorMessage);
+		return response.getSuccessBodyOrThrowHttpException(errorMessage);
+	}
+	
+	
+	// SEND SHORTCUTS
+	@API
 	public String receiveString()
 		throws IOException
 	{
 		return receive(new EzHttpStringBodyReader());
+	}
+	
+	@API
+	public String sendAndReceiveString(EzHttpRequestBody body)
+		throws IOException
+	{
+		return sendAndReceive(body, new EzHttpStringBodyReader());
 	}
 	
 	@API

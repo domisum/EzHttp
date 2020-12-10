@@ -32,6 +32,7 @@ public class TurboEz
 	private EzUrl url;
 	private final List<EzHttpHeader> headers = new ArrayList<>();
 	private final List<Consumer<EzHttpRequestEnvoy<?>>> configures = new ArrayList<>();
+	private String errorContextMessage;
 	
 	
 	// INIT
@@ -83,6 +84,14 @@ public class TurboEz
 		for(var header : headers)
 			addHeader(header);
 		
+		return this;
+	}
+	
+	
+	@API
+	public TurboEz setErrorContextMessage(String errorContextMessage)
+	{
+		this.errorContextMessage = errorContextMessage;
 		return this;
 	}
 	
@@ -198,7 +207,11 @@ public class TurboEz
 	
 	private String getErrorMessage(String verb)
 	{
-		return PHR.r("Failed to {}: {} {}", verb, method, url);
+		String errorMessage = PHR.r("Failed to {}: {} {}", verb, method, url);
+		if(errorContextMessage != null)
+			errorMessage = errorContextMessage+". Because: "+errorMessage;
+		
+		return errorMessage;
 	}
 	
 }

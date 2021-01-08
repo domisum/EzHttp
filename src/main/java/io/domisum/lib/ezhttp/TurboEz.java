@@ -117,9 +117,16 @@ public class TurboEz
 		
 		var ioResponse = envoy.send();
 		
-		String errorMessage = getErrorMessage("send");
-		var response = ioResponse.getOrThrowWrapped(errorMessage);
-		response.ifFailedThrowHttpException(errorMessage);
+		try
+		{
+			String errorMessage = getErrorMessage("send");
+			var response = ioResponse.getOrThrowWrapped(errorMessage);
+			response.ifFailedThrowHttpException(errorMessage);
+		}
+		catch(IOException e)
+		{
+			throw errorContextMessage == null ? e : new IOException(errorContextMessage, e);
+		}
 	}
 	
 	@API
@@ -155,9 +162,16 @@ public class TurboEz
 		
 		var ioResponse = envoy.send();
 		
-		String errorMessage = getErrorMessage("receive");
-		var response = ioResponse.getOrThrowWrapped(errorMessage);
-		return response.getSuccessBodyOrThrowHttpException(errorMessage);
+		try
+		{
+			String errorMessage = getErrorMessage("receive");
+			var response = ioResponse.getOrThrowWrapped(errorMessage);
+			return response.getSuccessBodyOrThrowHttpException(errorMessage);
+		}
+		catch(IOException e)
+		{
+			throw errorContextMessage == null ? e : new IOException(errorContextMessage, e);
+		}
 	}
 	
 	
@@ -207,11 +221,7 @@ public class TurboEz
 	
 	private String getErrorMessage(String verb)
 	{
-		String errorMessage = PHR.r("Failed to {}: {} {}", verb, method, url);
-		if(errorContextMessage != null)
-			errorMessage = errorContextMessage+". Because: "+errorMessage;
-		
-		return errorMessage;
+		return PHR.r("Failed to {}: {} {}", verb, method, url);
 	}
 	
 }

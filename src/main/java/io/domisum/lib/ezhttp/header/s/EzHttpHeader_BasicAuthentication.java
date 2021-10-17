@@ -1,17 +1,18 @@
-package io.domisum.lib.ezhttp.header;
+package io.domisum.lib.ezhttp.header.s;
 
 import io.domisum.lib.auxiliumlib.annotations.API;
+import io.domisum.lib.ezhttp.header.EzHttpHeader;
 
 import java.util.Base64;
 
 @API
-public class EzHttpHeaderBasicAuthentication
+public class EzHttpHeader_BasicAuthentication
 	extends EzHttpHeader
 {
 	
 	// INIT
 	@API
-	public EzHttpHeaderBasicAuthentication(String username, String password)
+	public EzHttpHeader_BasicAuthentication(String username, String password)
 	{
 		super("Authorization", "Basic "+encode(username, password));
 	}

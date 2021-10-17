@@ -1,7 +1,8 @@
-package io.domisum.lib.ezhttp.header;
+package io.domisum.lib.ezhttp.header.s;
 
 import io.domisum.lib.auxiliumlib.annotations.API;
 import io.domisum.lib.auxiliumlib.util.StringListUtil;
+import io.domisum.lib.ezhttp.header.EzHttpHeader;
 
 import java.util.ArrayList;
 import java.util.Map;

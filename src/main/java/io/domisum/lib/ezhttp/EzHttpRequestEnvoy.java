@@ -296,7 +296,7 @@ public class EzHttpRequestEnvoy<T>
 		// INIT
 		public IoTimeoutException(Duration timeout)
 		{
-			super("request aborted after timeout of "+DurationDisplay.display(timeout));
+			super("Request aborted after timeout of "+DurationDisplay.display(timeout));
 		}
 		
 	}

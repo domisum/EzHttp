@@ -27,7 +27,7 @@ class ThrottlingInputStream
 	{
 		final int secondsPerMinute = 60;
 		
-		var age = TimeUtil.toNow(readStart);
+		var age = TimeUtil.since(readStart);
 		double secondsSinceStart = TimeUtil.getMinutesDecimal(age)*secondsPerMinute;
 		long totalBytesAvailable = Math.round(bytesPerSecond*secondsSinceStart);
 		return totalBytesAvailable;

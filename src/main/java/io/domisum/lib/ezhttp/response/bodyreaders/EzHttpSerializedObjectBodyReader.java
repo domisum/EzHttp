@@ -37,12 +37,12 @@ public class EzHttpSerializedObjectBodyReader<T>
 		{
 			T object = stringSerdes.deserialize(serialized);
 			if(object == null)
-				throw new IOException("deserialized object was null (json input: "+serialized+")");
+				throw new IOException("Deserialized object was null (json input: "+serialized+")");
 			return object;
 		}
 		catch(RuntimeException e)
 		{
-			throw new IOException("failed to deserialize object: "+serialized, e);
+			throw new IOException("Failed to deserialize object: "+serialized, e);
 		}
 	}
 	

@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.time.Instant;
 
 @RequiredArgsConstructor
-class ThrottlingInputStream
+public class ThrottlingInputStream
 	extends InputStream
 {
 	

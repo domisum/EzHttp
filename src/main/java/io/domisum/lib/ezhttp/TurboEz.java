@@ -14,6 +14,7 @@ import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpStringBodyReader;
 import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpVoidBodyReader;
 import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpWriteToFileBodyReader;
 import io.domisum.lib.ezhttp.response.bodyreaders.EzHttpWriteToTempFileBodyReader;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,13 +27,13 @@ public class TurboEz
 {
 	
 	// ESSENTIAL
-	private final EzHttpMethod method;
+	@Getter private final EzHttpMethod method;
 	
 	// MALLEABLE
-	private EzUrl url;
-	private final List<EzHttpHeader> headers = new ArrayList<>();
+	@Getter private EzUrl url;
+	@Getter private final List<EzHttpHeader> headers = new ArrayList<>();
 	private final List<Consumer<EzHttpRequestEnvoy<?>>> configures = new ArrayList<>();
-	private String errorContextMessage;
+	@Getter private String errorContextMessage;
 	
 	
 	// INIT

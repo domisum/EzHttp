@@ -59,7 +59,7 @@ public class EzUrl
 		if(port != null)
 			ValidationUtil.validatePortInRange(port, "port");
 		if(path != null && path.contains("//"))
-			throw new IllegalArgumentException("path contains empty segment: '"+path+"'");
+			throw new IllegalArgumentException("path contains empty segment: '" + path + "'");
 		
 		this.protocol = protocol.toLowerCase();
 		this.host = host.toLowerCase();
@@ -69,7 +69,7 @@ public class EzUrl
 	}
 	
 	@API
-	public EzUrl(String protocol, String host, int port, String path)
+	public EzUrl(String protocol, String host, Integer port, String path)
 	{
 		this(protocol, host, port, path, null);
 	}
@@ -88,7 +88,7 @@ public class EzUrl
 		if(path.startsWith("/"))
 			path = path.substring(1);
 		if(path.endsWith("/"))
-			path = path.substring(0, path.length()-1);
+			path = path.substring(0, path.length() - 1);
 		
 		if(path.isEmpty())
 			return null;
@@ -118,7 +118,7 @@ public class EzUrl
 		else if(pathExtension == null)
 			path = basePath;
 		else
-			path = basePath+"/"+pathExtension;
+			path = basePath + "/" + pathExtension;
 		
 		return new EzUrl(protocol, host, port, path, queryParameters);
 	}
@@ -136,6 +136,12 @@ public class EzUrl
 	public EzUrl withParameter(String key, String value)
 	{
 		return withParameters(new QueryParameter(key, value));
+	}
+	
+	@API
+	public EzUrl deriveBase()
+	{
+		return new EzUrl(protocol, host, port, null);
 	}
 	
 	
@@ -160,10 +166,10 @@ public class EzUrl
 	
 	private String toString(boolean escaped)
 	{
-		String url = protocol+"://"+host;
+		String url = protocol + "://" + host;
 		
 		if(port != null)
-			url += ":"+port;
+			url += ":" + port;
 		
 		url += "/";
 		if(path != null)
@@ -182,7 +188,7 @@ public class EzUrl
 			}
 			
 			String queryString = StringListUtil.list(queryParameterStrings, "&");
-			url += "?"+queryString;
+			url += "?" + queryString;
 		}
 		
 		return url;
@@ -251,19 +257,19 @@ public class EzUrl
 		@Override
 		public String toString()
 		{
-			return "'"+key+"'='"+value+"'";
+			return "'" + key + "'='" + value + "'";
 		}
 		
 		
 		// GETTERS
 		public String getAsKeyValuePair()
 		{
-			return key+"="+value;
+			return key + "=" + value;
 		}
 		
 		public String getAsEscapedKeyValuePair()
 		{
-			return escapeString(key)+"="+escapeString(value);
+			return escapeString(key) + "=" + escapeString(value);
 		}
 		
 	}

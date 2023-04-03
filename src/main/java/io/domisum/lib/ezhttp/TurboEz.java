@@ -34,6 +34,7 @@ public class TurboEz
 	@Getter private final List<EzHttpHeader> headers = new ArrayList<>();
 	private final List<Consumer<EzHttpRequestEnvoy<?>>> configures = new ArrayList<>();
 	@Getter private String errorContextMessage;
+	@Getter private int silentRetries = 0;
 	
 	
 	// INIT
@@ -57,6 +58,7 @@ public class TurboEz
 	}
 	
 	
+	// CONFIGURE
 	@API
 	public TurboEz addParam(String key, String value)
 	{
@@ -97,6 +99,14 @@ public class TurboEz
 	}
 	
 	
+	@API
+	public TurboEz setSilentRetries(int silentRetries)
+	{
+		this.silentRetries = silentRetries;
+		return this;
+	}
+	
+	
 	// CONFIGURATION
 	@API
 	public TurboEz configure(Consumer<EzHttpRequestEnvoy<?>> configure)
@@ -118,16 +128,19 @@ public class TurboEz
 		
 		var ioResponse = envoy.send();
 		
-		try
-		{
-			String errorMessage = getErrorMessage("send");
-			var response = ioResponse.getOrThrowWrapped(errorMessage);
-			response.ifFailedThrowHttpException(errorMessage);
-		}
-		catch(IOException e)
-		{
-			throw errorContextMessage == null ? e : new IOException(errorContextMessage, e);
-		}
+		int tries = 1 + silentRetries;
+		for(int i = 0; i < tries; i++)
+			try
+			{
+				String errorMessage = getErrorMessage("send");
+				var response = ioResponse.getOrThrowWrapped(errorMessage);
+				response.ifFailedThrowHttpException(errorMessage);
+			}
+			catch(IOException e)
+			{
+				if(i + 1 == tries) // last try
+					throw errorContextMessage == null ? e : new IOException(errorContextMessage, e);
+			}
 	}
 	
 	@API

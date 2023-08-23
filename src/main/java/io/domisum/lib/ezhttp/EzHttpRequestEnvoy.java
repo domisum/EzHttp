@@ -51,7 +51,7 @@ public class EzHttpRequestEnvoy<T>
 	private final EzHttpRequest request;
 	private final EzHttpResponseBodyReader<T> successResponseBodyReader;
 	
-	// ADDTITIONAL SETTINGS
+	// ADDITIONAL SETTINGS
 	@Getter @Setter
 private boolean cancelOnInterrupt = true;
 	@Getter @Setter

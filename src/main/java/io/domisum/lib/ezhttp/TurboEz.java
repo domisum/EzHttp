@@ -60,9 +60,9 @@ public class TurboEz
 	
 	// CONFIGURE
 	@API
-	public TurboEz addParam(String key, String value)
+	public TurboEz addParam(String key, Object value)
 	{
-		url = url.withParameter(key, value);
+		url = url.withParameter(key, ""+value);
 		return this;
 	}
 	

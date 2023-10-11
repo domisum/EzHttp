@@ -14,7 +14,6 @@ import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -59,7 +58,7 @@ public class TurboEz
 	@API
 	public TurboEz addParam(String key, Object value)
 	{
-		url = url.withParameter(key, ""+value);
+		url = url.withParameter(key, "" + value);
 		return this;
 	}
 	
@@ -200,14 +199,6 @@ public class TurboEz
 	{
 		return sendAndReceive(body, new EzHttpStringBodyReader());
 	}
-	
-	@API
-	public InputStream receiveStream()
-		throws IOException
-	{
-		return receive(new EzHttpInputStreamBodyReader());
-	}
-	
 	
 	@API
 	public void receiveToFile(File file)

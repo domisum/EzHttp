@@ -1,7 +1,7 @@
 package io.domisum.lib.ezhttp;
 
 import io.domisum.lib.auxiliumlib.util.ThreadUtil;
-import io.domisum.lib.auxiliumlib.util.TimeUtil;
+import io.domisum.lib.auxiliumlib.time.TimeUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;

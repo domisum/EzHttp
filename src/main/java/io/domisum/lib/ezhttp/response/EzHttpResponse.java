@@ -127,9 +127,16 @@ public class EzHttpResponse<T>
 		// INIT
 		protected EzHttpException(int statusCode, String responseBody)
 		{
-			super("HTTP "+statusCode+", body:\n"+responseBody);
+			super("HTTP "+statusCode+", body:\n"+displayResponseBody(responseBody));
 			this.statusCode = statusCode;
 			this.responseBody = responseBody;
+		}
+		
+		private static String displayResponseBody(String responseBody)
+		{
+			if(responseBody != null && responseBody.isBlank())
+				return "<<<blank body>>>";
+			return responseBody;
 		}
 		
 		

@@ -59,7 +59,7 @@ public final class EzUrlParser
 	{
 		final var separator = "://";
 		
-		var splitAfterProtocol = StringUtil.split(remainder, separator);
+		var splitAfterProtocol = StringUtil.splitByRegex(remainder, separator);
 		if(splitAfterProtocol.size() == 0)
 			throw parseFail("Url has to contain protocol");
 		if(splitAfterProtocol.size() == 1)
@@ -156,14 +156,14 @@ public final class EzUrlParser
 		if(queryString.isEmpty())
 			throw parseFail("Query string can't be empty");
 		
-		var parametersAsString = StringUtil.split(queryString, "&");
+		var parametersAsString = StringUtil.splitByRegex(queryString, "&");
 		var queryParameters = new ArrayList<QueryParameter>();
 		for(String parameter : parametersAsString)
 		{
 			if(parameter.isEmpty())
 				throw parseFail("Parameter in query string can't be empty");
 			
-			var parameterSplit = StringUtil.split(parameter, "=");
+			var parameterSplit = StringUtil.splitByRegex(parameter, "=");
 			if(parameterSplit.size() != 2)
 				throw parseFail("Parameter in query string does not follow key=value schema: '"+parameter+"'");
 			

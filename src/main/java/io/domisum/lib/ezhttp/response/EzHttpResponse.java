@@ -136,6 +136,8 @@ public class EzHttpResponse<T>
 		{
 			if(responseBody != null && responseBody.isBlank())
 				return "<<<blank body>>>";
+			if(responseBody != null)
+				responseBody = responseBody.trim();
 			return responseBody;
 		}
 		

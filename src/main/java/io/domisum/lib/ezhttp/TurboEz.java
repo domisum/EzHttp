@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @API
@@ -27,10 +28,13 @@ public class TurboEz
 	
 	// MALLEABLE
 	@Getter private EzUrl url;
-	@Getter private final List<EzHttpHeader> headers = new ArrayList<>();
+	@Getter private final List<EzHttpHeader> requestHeaders = new ArrayList<>();
 	private final List<Consumer<EzHttpRequestEnvoy<?>>> configures = new ArrayList<>();
 	@Getter private String errorContextMessage;
 	@Getter private int silentRetries = 0;
+	
+	// RESPONSE
+	private List<EzHttpHeader> responseHeaders = null;
 	
 	
 	// INIT
@@ -73,7 +77,7 @@ public class TurboEz
 	@API
 	public TurboEz addHeader(EzHttpHeader header)
 	{
-		headers.add(header);
+		requestHeaders.add(header);
 		return this;
 	}
 	
@@ -102,8 +106,6 @@ public class TurboEz
 		return this;
 	}
 	
-	
-	// CONFIGURATION
 	@API
 	public TurboEz configure(Consumer<EzHttpRequestEnvoy<?>> configure)
 	{
@@ -130,6 +132,7 @@ public class TurboEz
 			{
 				String errorMessage = getErrorMessage("send");
 				var response = ioResponse.getOrThrowWrapped(errorMessage);
+				responseHeaders = response.getHeaders();
 				response.ifFailedThrowHttpException(errorMessage);
 			}
 			catch(IOException e)
@@ -176,6 +179,7 @@ public class TurboEz
 		{
 			String errorMessage = getErrorMessage("receive");
 			var response = ioResponse.getOrThrowWrapped(errorMessage);
+			responseHeaders = response.getHeaders();
 			return response.getSuccessBodyOrThrowHttpException(errorMessage);
 		}
 		catch(IOException e)
@@ -215,11 +219,28 @@ public class TurboEz
 	}
 	
 	
+	// RESPONSE
+	public List<EzHttpHeader> getResponseHeaders()
+	{
+		if(responseHeaders == null)
+			throw new IllegalStateException("Response headers are not available");
+		return responseHeaders;
+	}
+	
+	public Optional<String> getResponseHeaderValue(String headerName)
+	{
+		for(var rh : getResponseHeaders())
+			if(rh.getKey().equalsIgnoreCase(headerName))
+				return Optional.ofNullable(rh.getValue());
+		return Optional.empty();
+	}
+	
+	
 	// UTIL
 	private EzHttpRequest buildRequest()
 	{
 		var request = new EzHttpRequest(method, url);
-		request.addHeaders(headers);
+		request.addHeaders(requestHeaders);
 		return request;
 	}
 	

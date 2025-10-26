@@ -152,24 +152,25 @@ public class TurboEz
 		request.setBody(body);
 		var envoy = new EzHttpRequestEnvoy<>(request, responseBodyReader);
 		configure(envoy);
+		String errorMessage = getErrorMessage("send/receive");
 		
 		int tries = 1 + silentRetries;
 		for(int i = 0; i < tries; i++)
 			try
 			{
 				var ioResponse = envoy.send();
-				String errorMessage = getErrorMessage("send/receive");
 				var response = ioResponse.getOrThrowWrapped(errorMessage);
 				responseHeaders = response.getHeaders();
 				return response.getSuccessBodyOrThrowHttpException(errorMessage);
 			}
 			catch(IOException e)
 			{
-				if(i + 1 == tries) // last try
+				boolean isLastTry = i + 1 == tries;
+				if(isLastTry)
 					throw errorContextMessage == null ? e : new IOException(errorContextMessage, e);
 			}
 		
-		throw new ProgrammingError("IOException should have been thrown on last try");
+		throw new ProgrammingError("IOException should have been rethrown on last try");
 	}
 	
 	

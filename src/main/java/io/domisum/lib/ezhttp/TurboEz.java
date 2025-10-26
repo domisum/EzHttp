@@ -3,6 +3,7 @@ package io.domisum.lib.ezhttp;
 import io.domisum.lib.auxiliumlib.PHR;
 import io.domisum.lib.auxiliumlib.annotations.API;
 import io.domisum.lib.auxiliumlib.contracts.serdes.StringSerdes;
+import io.domisum.lib.auxiliumlib.exceptions.ProgrammingError;
 import io.domisum.lib.ezhttp.header.EzHttpHeader;
 import io.domisum.lib.ezhttp.request.EzHttpMethod;
 import io.domisum.lib.ezhttp.request.EzHttpRequest;
@@ -119,34 +120,14 @@ public class TurboEz
 	public void send(EzHttpRequestBody body)
 		throws IOException
 	{
-		var request = buildRequest();
-		request.setBody(body);
-		var envoy = new EzHttpRequestEnvoy<>(request, new EzHttpVoidBodyReader());
-		configure(envoy);
-		
-		var ioResponse = envoy.send();
-		
-		int tries = 1 + silentRetries;
-		for(int i = 0; i < tries; i++)
-			try
-			{
-				String errorMessage = getErrorMessage("send");
-				var response = ioResponse.getOrThrowWrapped(errorMessage);
-				responseHeaders = response.getHeaders();
-				response.ifFailedThrowHttpException(errorMessage);
-			}
-			catch(IOException e)
-			{
-				if(i + 1 == tries) // last try
-					throw errorContextMessage == null ? e : new IOException(errorContextMessage, e);
-			}
+		sendAndReceive(body, new EzHttpVoidBodyReader());
 	}
 	
 	@API
 	public void send()
 		throws IOException
 	{
-		send(null);
+		sendAndReceive(null, new EzHttpVoidBodyReader());
 	}
 	
 	@API
@@ -160,7 +141,7 @@ public class TurboEz
 	public <T> T receive(StringSerdes<T> stringSerdes)
 		throws IOException
 	{
-		return receive(new EzHttpSerializedObjectBodyReader<>(stringSerdes));
+		return sendAndReceive(null, new EzHttpSerializedObjectBodyReader<>(stringSerdes));
 	}
 	
 	@API
@@ -168,24 +149,27 @@ public class TurboEz
 		throws IOException
 	{
 		var request = buildRequest();
-		if(body != null)
-			request.setBody(body);
+		request.setBody(body);
 		var envoy = new EzHttpRequestEnvoy<>(request, responseBodyReader);
 		configure(envoy);
 		
-		var ioResponse = envoy.send();
+		int tries = 1 + silentRetries;
+		for(int i = 0; i < tries; i++)
+			try
+			{
+				var ioResponse = envoy.send();
+				String errorMessage = getErrorMessage("send/receive");
+				var response = ioResponse.getOrThrowWrapped(errorMessage);
+				responseHeaders = response.getHeaders();
+				return response.getSuccessBodyOrThrowHttpException(errorMessage);
+			}
+			catch(IOException e)
+			{
+				if(i + 1 == tries) // last try
+					throw errorContextMessage == null ? e : new IOException(errorContextMessage, e);
+			}
 		
-		try
-		{
-			String errorMessage = getErrorMessage("receive");
-			var response = ioResponse.getOrThrowWrapped(errorMessage);
-			responseHeaders = response.getHeaders();
-			return response.getSuccessBodyOrThrowHttpException(errorMessage);
-		}
-		catch(IOException e)
-		{
-			throw errorContextMessage == null ? e : new IOException(errorContextMessage, e);
-		}
+		throw new ProgrammingError("IOException should have been thrown on last try");
 	}
 	
 	

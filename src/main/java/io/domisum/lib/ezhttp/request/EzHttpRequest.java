@@ -25,7 +25,7 @@ public class EzHttpRequest
 	
 	@Getter
 	@Setter
-	private EzHttpRequestBody body;
+	private EzHttpRequestBody body = null;
 	
 	
 	// INIT

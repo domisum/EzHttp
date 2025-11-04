@@ -4,6 +4,7 @@ import io.domisum.lib.auxiliumlib.PHR;
 import io.domisum.lib.auxiliumlib.annotations.API;
 import io.domisum.lib.auxiliumlib.contracts.serdes.StringSerdes;
 import io.domisum.lib.auxiliumlib.exceptions.ProgrammingError;
+import io.domisum.lib.auxiliumlib.util.ThreadUtil;
 import io.domisum.lib.ezhttp.header.EzHttpHeader;
 import io.domisum.lib.ezhttp.request.EzHttpMethod;
 import io.domisum.lib.ezhttp.request.EzHttpRequest;
@@ -13,8 +14,10 @@ import io.domisum.lib.ezhttp.response.EzHttpResponseBodyReader;
 import io.domisum.lib.ezhttp.response.bodyreaders.*;
 import lombok.Getter;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,8 +34,9 @@ public class TurboEz
 	@Getter private EzUrl url;
 	@Getter private final List<EzHttpHeader> requestHeaders = new ArrayList<>();
 	private final List<Consumer<EzHttpRequestEnvoy<?>>> configures = new ArrayList<>();
-	@Getter private String errorContextMessage;
+	@Getter @Nullable private String errorContextMessage;
 	@Getter private int silentRetries = 0;
+	@Getter @Nullable private Duration retryWait;
 	
 	// RESPONSE
 	private List<EzHttpHeader> responseHeaders = null;
@@ -103,7 +107,15 @@ public class TurboEz
 	@API
 	public TurboEz setSilentRetries(int silentRetries)
 	{
+		setSilentRetries(silentRetries, null);
+		return this;
+	}
+	
+	@API
+	public TurboEz setSilentRetries(int silentRetries, Duration waitBetween)
+	{
 		this.silentRetries = silentRetries;
+		this.retryWait = waitBetween;
 		return this;
 	}
 	
@@ -168,6 +180,8 @@ public class TurboEz
 				boolean isLastTry = i + 1 == tries;
 				if(isLastTry)
 					throw errorContextMessage == null ? e : new IOException(errorContextMessage, e);
+				else if(retryWait != null)
+					ThreadUtil.sleep(retryWait);
 			}
 		
 		throw new ProgrammingError("IOException should have been rethrown on last try");

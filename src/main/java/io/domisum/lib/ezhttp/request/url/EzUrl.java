@@ -2,6 +2,7 @@ package io.domisum.lib.ezhttp.request.url;
 
 import io.domisum.lib.auxiliumlib.annotations.API;
 import io.domisum.lib.auxiliumlib.util.StringListUtil;
+import io.domisum.lib.auxiliumlib.util.StringUtil;
 import io.domisum.lib.auxiliumlib.util.ValidationUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -10,14 +11,7 @@ import javax.annotation.Nullable;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @API
 @EqualsAndHashCode
@@ -292,7 +286,7 @@ public class EzUrl
 	public static String escapePath(String path)
 	{
 		var escapedSegments = new ArrayList<String>();
-		for(String segment : path.split("/"))
+		for(String segment : StringUtil.splitByLiteral(path, "/"))
 			escapedSegments.add(escapeString(segment));
 		
 		return StringListUtil.list(escapedSegments, "/");
@@ -302,7 +296,7 @@ public class EzUrl
 	public static String unescapePath(String escapedPath)
 	{
 		var unescapedSegments = new ArrayList<String>();
-		for(String segment : escapedPath.split("/"))
+		for(String segment : StringUtil.splitByLiteral(escapedPath, "/"))
 			unescapedSegments.add(unescapeString(segment));
 		
 		return StringListUtil.list(unescapedSegments, "/");

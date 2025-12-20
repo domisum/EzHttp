@@ -23,40 +23,39 @@ public class EzUrlTest
 	@Test
 	public void testWrongProtocol()
 	{
-		assertCreationFails(()->new EzUrl(null, "google.com", null, null, null));
-		assertCreationFails(()->new EzUrl("", "google.com", null, null, null));
+		assertCreationFails(() -> new EzUrl(null, "google.com", null, null, null));
+		assertCreationFails(() -> new EzUrl("", "google.com", null, null, null));
 	}
 	
 	@Test
 	public void testWrongHost()
 	{
-		assertCreationFails(()->new EzUrl("http", null, null, null, null));
-		assertCreationFails(()->new EzUrl("http", "", null, null, null));
+		assertCreationFails(() -> new EzUrl("http", null, null, null, null));
+		assertCreationFails(() -> new EzUrl("http", "", null, null, null));
 	}
 	
 	@Test
 	public void testWrongPort()
 	{
-		assertCreationFails(()->new EzUrl("http", "google.com", -8, null, null));
-		assertCreationFails(()->new EzUrl("http", "google.com", 0, null, null));
-		assertCreationFails(()->new EzUrl("http", "google.com", 100000, null, null));
+		assertCreationFails(() -> new EzUrl("http", "google.com", -8, null, null));
+		assertCreationFails(() -> new EzUrl("http", "google.com", 0, null, null));
+		assertCreationFails(() -> new EzUrl("http", "google.com", 100000, null, null));
 	}
 	
 	@Test
 	public void testWrongPath()
 	{
-		assertCreationFails(()->new EzUrl("http", "google.com", 80, "//", null));
-		assertCreationFails(()->new EzUrl("http", "google.com", 80, "ok/nice//", null));
-		assertCreationFails(()->new EzUrl("http", "google.com", 80, "ok/nice//this/", null));
+		assertCreationFails(() -> new EzUrl("http", "google.com", 80, "//", null));
+		assertCreationFails(() -> new EzUrl("http", "google.com", 80, "ok/nice//", null));
+		assertCreationFails(() -> new EzUrl("http", "google.com", 80, "ok/nice//this/", null));
 	}
 	
 	@Test
 	public void testWrongQueryParameters()
 	{
-		assertCreationFails(()->new EzUrl("http", "google.com", 80, "/ok/this", qp(null, "a", "b", "c")));
-		assertCreationFails(()->new EzUrl("http", "google.com", 80, "/ok/this", qp("", "a", "b", "c")));
-		assertCreationFails(()->new EzUrl("http", "google.com", 80, "/ok/this", qp("o", null, "b", "c")));
-		assertCreationFails(()->new EzUrl("http", "google.com", 80, "/ok/this", qp("o", "", "b", "c")));
+		assertCreationFails(() -> new EzUrl("http", "google.com", 80, "/ok/this", qp(null, "a", "b", "c")));
+		assertCreationFails(() -> new EzUrl("http", "google.com", 80, "/ok/this", qp("", "a", "b", "c")));
+		assertCreationFails(() -> new EzUrl("http", "google.com", 80, "/ok/this", qp("o", "", "b", "c")));
 	}
 	
 	

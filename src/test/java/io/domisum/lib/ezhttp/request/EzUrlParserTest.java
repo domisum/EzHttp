@@ -24,6 +24,9 @@ public class EzUrlParserTest
 			"ftp://www.op.gg:20901/this/that?j=p&jkl=0391");
 		assertParseUnescapedEquals(new EzUrl("http", "127.0.0.1", 80, "adv/antage", EzUrlTest.qp("build", "7", "filter", "none")),
 			"http://127.0.0.1:80/adv/antage?build=7&filter=none");
+		assertParseUnescapedEquals(new EzUrl("https", "wiki.leagueoflegends.com", null, "en-us/images/Nunu_NunuBotSkin_HD.jpg",
+				EzUrlTest.qp("f981e", null, "asdf", null)),
+			"https://wiki.leagueoflegends.com/en-us/images/Nunu_NunuBotSkin_HD.jpg?f981e&asdf");
 	}
 	
 	
@@ -90,7 +93,7 @@ public class EzUrlParserTest
 	
 	private void assertParseUnescapedFails(String url)
 	{
-		Assertions.assertThrows(IllegalArgumentException.class, ()->EzUrlParser.parseUnescaped(url));
+		Assertions.assertThrows(IllegalArgumentException.class, () -> EzUrlParser.parseUnescaped(url));
 	}
 	
 }

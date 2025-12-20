@@ -226,21 +226,21 @@ public class EzUrl
 	
 	// PARAMETER
 	@EqualsAndHashCode
+	@Getter
 	public static class QueryParameter
 	{
 		
 		// ATTRIBUTES
-		@Getter
 		private final String key;
-		@Getter
-		private final String value;
+		@Nullable private final String value;
 		
 		
 		// INIT
 		public QueryParameter(String key, String value)
 		{
 			ValidationUtil.notBlank(key, "key");
-			ValidationUtil.notBlank(value, "value");
+			if(value != null)
+				ValidationUtil.notBlank(value, "value");
 			
 			this.key = key;
 			this.value = value;
@@ -251,19 +251,28 @@ public class EzUrl
 		@Override
 		public String toString()
 		{
-			return "'" + key + "'='" + value + "'";
+			String s = StringUtil.wrapWith(key, "'");
+			if(value != null)
+				s += "=" + StringUtil.wrapWith(value, "'");
+			return s;
 		}
 		
 		
 		// GETTERS
 		public String getAsKeyValuePair()
 		{
-			return key + "=" + value;
+			String s = key;
+			if(value != null)
+				s += "=" + value;
+			return s;
 		}
 		
 		public String getAsEscapedKeyValuePair()
 		{
-			return escapeString(key) + "=" + escapeString(value);
+			String s = escapeString(key);
+			if(value != null)
+				s += "=" + escapeString(value);
+			return s;
 		}
 		
 	}

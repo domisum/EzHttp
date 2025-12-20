@@ -96,8 +96,8 @@ public final class EzUrlParser
 			String componentString = remainder.substring(0, separatorAfterComponentIndex);
 			T componentParsed = parse.apply(componentString);
 			
-			separatorBeforeRemainder = remainder.charAt(separatorAfterComponentIndex)+"";
-			remainder = remainder.substring(separatorAfterComponentIndex+1);
+			separatorBeforeRemainder = remainder.charAt(separatorAfterComponentIndex) + "";
+			remainder = remainder.substring(separatorAfterComponentIndex + 1);
 			
 			return componentParsed;
 		}
@@ -106,7 +106,7 @@ public final class EzUrlParser
 	private static Integer minIndexOf(String in, char... chars)
 	{
 		int[] indices = new int[chars.length];
-		Arrays.setAll(indices, i->in.indexOf(chars[i]));
+		Arrays.setAll(indices, i -> in.indexOf(chars[i]));
 		
 		return minIndex(indices);
 	}
@@ -139,7 +139,7 @@ public final class EzUrlParser
 		}
 		catch(NumberFormatException ignored)
 		{
-			throw parseFail("Invalid port: '"+portString+"'");
+			throw parseFail("Invalid port: '" + portString + "'");
 		}
 	}
 	
@@ -164,21 +164,20 @@ public final class EzUrlParser
 				throw parseFail("Parameter in query string can't be empty");
 			
 			var parameterSplit = StringUtil.splitByLiteral(parameter, "=");
-			if(parameterSplit.size() != 2)
-				throw parseFail("Parameter in query string does not follow key=value schema: '"+parameter+"'");
+			if(parameterSplit.isEmpty() || parameterSplit.size() > 2)
+				throw parseFail("Parameter in query string does not follow key[=value] schema: '" + parameter + "'");
 			
 			String key = parameterSplit.get(0);
-			String value = parameterSplit.get(1);
+			String value = parameterSplit.size() == 2 ? parameterSplit.get(1) : null;
 			
 			if(key.isEmpty())
 				throw parseFail("Parameter key in query string can't be empty");
-			if(value.isEmpty())
-				throw parseFail("Parameter value in query string can't be empty");
 			
 			if(escaped)
 			{
 				key = EzUrl.unescapeString(key);
-				value = EzUrl.unescapeString(value);
+				if(value != null)
+					value = EzUrl.unescapeString(value);
 			}
 			
 			queryParameters.add(new QueryParameter(key, value));
@@ -191,7 +190,7 @@ public final class EzUrlParser
 	// UTIL
 	private IllegalArgumentException parseFail(String message)
 	{
-		return new IllegalArgumentException(message+": "+url);
+		return new IllegalArgumentException(message + ": " + url);
 	}
 	
 }
